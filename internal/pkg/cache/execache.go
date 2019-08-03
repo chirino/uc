@@ -1,8 +1,8 @@
 package cache
 
 import (
+    "compress/gzip"
     "fmt"
-    "github.com/chirino/uc/internal/cmd"
     "github.com/chirino/uc/internal/pkg/archive"
     "github.com/chirino/uc/internal/pkg/pkgsign"
     "github.com/chirino/uc/internal/pkg/user"
@@ -11,6 +11,7 @@ import (
     "os"
     "path"
     "path/filepath"
+    "runtime"
 )
 
 type Request struct {
@@ -18,19 +19,21 @@ type Request struct {
     URL          string
     Signature    string
     Size         int64
-    DownloadPath string
-    CommandName  string
+    DownloadPath string `json:"download-path,omitempty"`
+    CommandName  string `json:"command-name,omitempty"`
     Version      string
-    PathInZip    string
+    ExtractZip   string `json:"extract-zip,omitempty"`
+    ExtractTgz   string `json:"extract-tgz,omitempty"`
+    Uncompress   string `json:"extract-gz,omitempty"`
 }
 
-func GetCommandFromCache(r *Request) (string, error) {
+func Get(r *Request) (string, error) {
     dir, err := CacheCommandPath()
     if err != nil {
         return "", err
     }
 
-    targetExe := filepath.Join(dir, r.CommandName, r.Version, cmd.ExeSuffix(r.CommandName))
+    targetExe := filepath.Join(dir, r.CommandName, r.Version, ExeSuffix(r.CommandName))
     exists, err := Exists(targetExe)
     if err != nil {
         return "", err
@@ -43,16 +46,36 @@ func GetCommandFromCache(r *Request) (string, error) {
         return "", err
     }
 
-    if r.PathInZip != "" {
-        err = archive.UnzipCommand(downloadPath, r.PathInZip, targetExe)
+    dir = filepath.Dir(targetExe)
+    err = os.MkdirAll(dir, 0755)
+    if err != nil {
+        return "", err
+    }
+
+    if r.ExtractZip != "" {
+        err = archive.UnzipCommand(downloadPath, r.ExtractZip, targetExe)
         if err != nil {
             return "", err
         }
-        // TODO: figure out..
-        return targetExe, nil
+    } else if r.ExtractTgz != "" {
+        err = archive.UntgzCommand(downloadPath, r.ExtractTgz, targetExe)
+        if err != nil {
+            return "", err
+        }
+    } else if r.Uncompress != "gz" {
+        _, err := CopyExectuable(downloadPath, targetExe, func(r io.Reader) (closer io.ReadCloser, e error) {
+            return gzip.NewReader(r)
+        })
+        if err != nil {
+            return "", err
+        }
     } else {
-        return downloadPath, nil
+        _, err := CopyExectuable(downloadPath, targetExe)
+        if err != nil {
+            return "", err
+        }
     }
+    return targetExe, nil
 }
 
 // Returns the path on the local file system for the requested exe
@@ -83,7 +106,6 @@ func Exists(filename string) (bool, error) {
 }
 
 func download(r *Request, to string) error {
-
 
     // Create the directories...
     dir := filepath.Dir(to)
@@ -157,5 +179,37 @@ func CacheCommandPath() (string, error) {
     if home == "" {
         return "", fmt.Errorf("Cannot determine the user home directory")
     }
-    return filepath.Join(home, ".uc", "cache", "downloads"), nil
+    return filepath.Join(home, ".uc", "cache", "commands"), nil
+}
+
+func ExeSuffix(s string) string {
+    if runtime.GOOS == "windows" {
+        return s + ".exe"
+    }
+    return s
+}
+
+func CopyExectuable(from string, to string, filters ...func(r io.Reader) (io.ReadCloser, error)) (int64, error) {
+    source, err := os.Open(from)
+    if err != nil {
+        return 0, err
+    }
+    defer source.Close()
+
+    sourceReader := io.ReadCloser(source)
+    for _, f := range filters {
+        sourceReader, err = f(sourceReader)
+        if err != nil {
+            return 0, err
+        }
+        defer sourceReader.Close()
+    }
+
+    destination, err := os.OpenFile(to, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
+    if err != nil {
+        return 0, err
+    }
+    defer destination.Close()
+    nBytes, err := io.Copy(destination, sourceReader)
+    return nBytes, err
 }

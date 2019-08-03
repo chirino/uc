@@ -1,5 +1,5 @@
 // This package implements a sub command plugin for oc.
-package oc
+package kubectl
 
 import (
     "github.com/chirino/uc/internal/cmd"
@@ -25,6 +25,6 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info)
         return nil, nil
     }
 
-    return cmd.GetCobraCommand(options, "oc", clientVersion)
+    return cmd.GetCobraCommand(options, "kubectl", clientVersion)
 }
 

@@ -3,6 +3,8 @@ package cmd
 import (
     "context"
     "fmt"
+    "github.com/chirino/hawtgo/sh"
+    "github.com/chirino/uc/internal/pkg/cache"
     "github.com/chirino/uc/internal/pkg/user"
     "github.com/spf13/cobra"
     "k8s.io/apimachinery/pkg/version"
@@ -17,19 +19,38 @@ type CmdFactory func(options *Options, api *kubernetes.Clientset, serverVersion 
 
 var SubCmdFactories = []CmdFactory{}
 
+type CatalogConfig struct {
+    Update   string
+    Commands map[string]*CatalogCommand
+}
+
+type CatalogCommand struct {
+    // Versions[version][platform] => cache.Request
+    Versions map[string]map[string]*cache.Request
+}
+
 type Options struct {
     Context    context.Context
     kubeconfig string
     master     string
     cmdsAdded  bool
     Printf     func(format string, a ...interface{})
+    Config     *CatalogConfig
 }
 
 func New(ctx context.Context) (*cobra.Command, error) {
-    o := Options{
-        Context: ctx,
-        Printf: StdErrPrintf,
+
+    config, err := loadConfig()
+    if err != nil {
+        return nil, err
     }
+
+    o := Options {
+        Context: ctx,
+        Printf:  StdErrPrintf,
+        Config: config,
+    }
+
     var cmd = cobra.Command{
         // BashCompletionFunction: bashCompletionFunction,
         Use:               `uc`,
@@ -84,13 +105,47 @@ func (o *Options) Run(cmd *cobra.Command, args []string) error {
     return nil
 }
 
-func ExeSuffix(s string) string {
-    if runtime.GOOS == "windows" {
-        return s + ".exe"
-    }
-    return s
-}
-
 func StdErrPrintf(format string, a ...interface{}) {
     fmt.Fprintf(os.Stderr, format, a...)
 }
+
+func GetExecutable(options *Options, command string, version string) (string, error) {
+    config := options.Config.Commands[command]
+    if config == nil {
+        return "", fmt.Errorf("command not found in catalog: %s", command)
+    }
+
+    platforms := config.Versions[version]
+    if platforms == nil {
+        return "", fmt.Errorf("%s version not found in catalog: %s", command, version)
+    }
+    platform := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
+    request := platforms[platform]
+    if request == nil {
+        return "", fmt.Errorf("%s %s platform not found in catalog: %s", command, version, platform)
+    }
+    request.CommandName = command
+    request.Version = version
+    request.Printf = options.Printf
+    return cache.Get(request)
+}
+
+func GetCobraCommand(options *Options, command string, clientVersion string) (*cobra.Command, error) {
+    return &cobra.Command{
+        Use: command,
+        RunE: func(c *cobra.Command, args []string) error {
+
+            // Get the executable for that client version...
+            executable, err := GetExecutable(options, command, clientVersion)
+            if err != nil {
+                return err
+            }
+
+            // call it pass along any args....
+            rc, err := sh.New().LineArgs(append([]string{executable}, args...)...).Exec()
+            os.Exit(rc)
+            return nil
+        },
+    }, nil
+}
+
