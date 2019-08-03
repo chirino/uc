@@ -46,8 +46,8 @@ func loadConfig() (*CatalogConfig, error) {
         return nil, err
     }
     if err := pkgsign.CheckSignature(string(sig), path); err != nil {
-        os.Remove(sigpath) // this will trigger a re-download of the catalog..
-        return nil, fmt.Errorf("validating ~/.uc/catalog.yaml: %v", path, err)
+        os.Remove(path) // this will trigger a re-download of the catalog..
+        return nil, fmt.Errorf("validating %s: %v", path, err)
     }
 
     file, err := os.Open(path)
