@@ -130,26 +130,34 @@ func download(r *Request, to string) error {
     {
 
         r.Printf("downloading: %s\n", r.URL)
-
-        resp, err := http.Get(r.URL)
+        err := HttpGet(r.URL, to)
         if err != nil {
             return err
         }
-        defer resp.Body.Close()
-
-        out, err := os.Create(to)
-        if err != nil {
-            return err
-        }
-        defer out.Close()
-
-        // Write the body to file
-        _, err = io.Copy(out, resp.Body)
         r.Printf("done: %s\n", r.URL)
 
     }
 
     return verifyDownload(r, to)
+}
+
+func HttpGet(url string, to string) error {
+    resp, err := http.Get(url)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+    if resp.StatusCode < 200  || resp.StatusCode >= 300 {
+        return fmt.Errorf("get '%s' status code: %d", url, resp.StatusCode)
+    }
+    out, err := os.Create(to)
+    if err != nil {
+        return err
+    }
+    defer out.Close()
+    // Write the body to file
+    _, err = io.Copy(out, resp.Body)
+    return nil
 }
 
 func verifyDownload(r *Request, downloadPath string) error {
