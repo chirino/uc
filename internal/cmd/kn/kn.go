@@ -1,5 +1,5 @@
 // This package implements a sub command plugin for oc.
-package oc
+package kn
 
 import (
     "github.com/chirino/uc/internal/cmd"
@@ -16,8 +16,8 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info)
 
     // Todo: figure out best way select the best client version for the server we are connected to.
     serverToClientVersionMap := map[string]string{
-        "3.11.0": "3.11.0",
-        "1.12+":  "3.11.0",
+        "3.11.0": "0.2.0",
+        "1.12+":  "0.2.0",
     }
     serverVersion := info.Major + "." + info.Minor
     clientVersion := serverToClientVersionMap[serverVersion]
@@ -25,6 +25,6 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info)
         return nil, nil
     }
 
-    return cmd.GetCobraCommand(options, "oc", clientVersion)
+    return cmd.GetCobraCommand(options, "kn", clientVersion)
 }
 

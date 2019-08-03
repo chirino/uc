@@ -70,11 +70,9 @@ func CheckSignature(base64Sig string, file string) error {
         return fmt.Errorf("invalid signature: " + err.Error())
     }
 
-    entity, err := openpgp.CheckDetachedSignature(keyring, signed, strings.NewReader(signature))
+    _, err = openpgp.CheckDetachedSignature(keyring, signed, strings.NewReader(signature))
     if err != nil {
         return fmt.Errorf("signature check failure: " + err.Error())
     }
-
-    fmt.Printf("entity: %v\n", entity)
     return nil
 }

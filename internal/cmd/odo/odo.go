@@ -1,5 +1,5 @@
-// This package implements a sub command plugin for oc.
-package oc
+// This package implements a sub command plugin for odo.
+package odo
 
 import (
     "github.com/chirino/uc/internal/cmd"
@@ -16,8 +16,8 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info)
 
     // Todo: figure out best way select the best client version for the server we are connected to.
     serverToClientVersionMap := map[string]string{
-        "3.11.0": "3.11.0",
-        "1.12+":  "3.11.0",
+        "3.11.0": "1.0.0-beta3",
+        "1.12+":  "1.0.0-beta3",
     }
     serverVersion := info.Major + "." + info.Minor
     clientVersion := serverToClientVersionMap[serverVersion]
@@ -25,6 +25,6 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info)
         return nil, nil
     }
 
-    return cmd.GetCobraCommand(options, "oc", clientVersion)
+    return cmd.GetCobraCommand(options, "odo", clientVersion)
 }
 

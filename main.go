@@ -4,14 +4,17 @@ import (
     "context"
     "fmt"
     "github.com/chirino/uc/internal/cmd"
+    _ "github.com/chirino/uc/internal/cmd/kamel"
+    _ "github.com/chirino/uc/internal/cmd/kn"
+    _ "github.com/chirino/uc/internal/cmd/kubectl"
     _ "github.com/chirino/uc/internal/cmd/oc"
+    _ "github.com/chirino/uc/internal/cmd/odo"
     _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
     "math/rand"
     "os"
     "path/filepath"
     "strings"
     "time"
-
 )
 
 func main() {

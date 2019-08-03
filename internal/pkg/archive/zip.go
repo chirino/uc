@@ -5,7 +5,6 @@ import (
     "fmt"
     "io"
     "os"
-    "path/filepath"
 )
 
 func UnzipCommand(zipFile string, pathInZip string, to string) error {
@@ -38,28 +37,18 @@ func Unzip(zipFile string, filter func(dest *zip.File) (string, os.FileMode)) er
             continue
         }
 
-        dir := filepath.Dir(target)
-        err := os.MkdirAll(dir, 0755)
-        if err != nil {
-            return err
-        }
-
         zippedFile, err := zipEntry.Open()
         if err != nil {
             return err
         }
-        defer zippedFile.Close()
 
-        targetFile, err := os.OpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, targetMode)
-        if err != nil {
+        if err := WithOpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, targetMode, func(file *os.File) error {
+            _, err = io.Copy(file, zippedFile)
+            return err
+        }); err != nil {
             return err
         }
-        defer targetFile.Close()
-
-        _, err = io.Copy(targetFile, zippedFile)
-        if err != nil {
-            return err
-        }
+        zippedFile.Close()
     }
     return nil
 }

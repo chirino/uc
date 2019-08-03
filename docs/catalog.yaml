@@ -1,0 +1,44 @@
+commands:
+  oc:
+    versions:
+      3.11.0:
+        darwin-amd64:
+          url: https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-mac.zip
+          signature: "iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUSrYAAKCRCf8lmA9bp+TyRhAJ9LwDvN8paD4+OTxmCmGfQZ2f/pDgCgvj3efSc/+0KdnQr7DgtxY0u0gFY="
+          size: 55858072
+          pathInZip: oc
+  kubectl:
+    versions:
+      3.11.0:
+        darwin-amd64:
+          url: https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-mac.zip
+          signature: "iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUSrYAAKCRCf8lmA9bp+TyRhAJ9LwDvN8paD4+OTxmCmGfQZ2f/pDgCgvj3efSc/+0KdnQr7DgtxY0u0gFY="
+          size: 55858072
+          extract-zip: kubectl
+
+  kn:
+    versions:
+      0.2.0:
+        darwin-amd64:
+          url: https://github.com/knative/client/releases/download/v0.2.0/kn-darwin-amd64
+          signature: "iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUXt8QAKCRCf8lmA9bp+T6sAAJ0dFvu1ycjReVarruAJAvftaeZh3wCgtGXni317FeKLPFA9SHhyW8czIjs="
+          size: 37057304
+
+  kamel:
+    versions:
+      1.0.0-M1:
+        darwin-amd64:
+          url: https://github.com/apache/camel-k/releases/download/1.0.0-M1/camel-k-client-1.0.0-M1-mac-64bit.tar.gz
+          signature: "iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUX0XAAKCRCf8lmA9bp+T6dbAKDQl/fDumuRqkaaSZn2A9PP1+VD7wCggmgiYVvDLbkg/iGFtJpmY9dlU6M="
+          size: 19377557
+          extract-tgz: ./kamel
+
+  odo:
+    versions:
+      1.0.0-beta3:
+        darwin-amd64:
+          url: https://github.com/openshift/odo/releases/download/v1.0.0-beta3/odo-darwin-amd64.gz
+          signature: "iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUX6twAKCRCf8lmA9bp+TxPFAJsGf9u8mAWyPXM00yFbyrNOlAJFMwCgpKZ601X5oMfQLG5I/dezqb+uUCg="
+          size: 12788347
+          uncompress: gz
+
