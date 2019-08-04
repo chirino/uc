@@ -5,7 +5,8 @@ package cmd
 import (
     "fmt"
     "github.com/chirino/uc/internal/pkg/cache"
-    "github.com/chirino/uc/internal/pkg/pkgsign"
+    "github.com/chirino/uc/internal/pkg/files"
+    "github.com/chirino/uc/internal/pkg/signature"
     "github.com/chirino/uc/internal/pkg/user"
     "io/ioutil"
     "os"
@@ -14,7 +15,7 @@ import (
     "time"
 )
 
-func loadConfig() (*CatalogConfig, error) {
+func LoadConfig() (*CatalogConfig, error) {
 
     path, err := CatalogPath()
     if err != nil {
@@ -32,10 +33,14 @@ func loadConfig() (*CatalogConfig, error) {
     }
 
     if downloadCatalog {
-        if err := cache.HttpGet("https://chirino.github.io/uc/catalog.yaml.sig", sigpath); err != nil {
+        if err := files.WithCreate(sigpath, func(file *os.File) error {
+            return cache.HttpGet("https://chirino.github.io/uc/catalog.yaml.sig", file)
+        }); err != nil {
             return nil, err
         }
-        if err := cache.HttpGet("https://chirino.github.io/uc/catalog.yaml", path); err != nil {
+        if err := files.WithCreate(path, func(file *os.File) error {
+            return cache.HttpGet("https://chirino.github.io/uc/catalog.yaml", file)
+        }); err != nil {
             return nil, err
         }
     }
@@ -45,7 +50,7 @@ func loadConfig() (*CatalogConfig, error) {
     if err != nil {
         return nil, err
     }
-    if err := pkgsign.CheckSignature(string(sig), path); err != nil {
+    if err := signature.CheckSignature(string(sig), path); err != nil {
         os.Remove(path) // this will trigger a re-download of the catalog..
         return nil, fmt.Errorf("validating %s: %v", path, err)
     }

@@ -3,6 +3,7 @@ package archive
 import (
     "archive/zip"
     "fmt"
+    "github.com/chirino/uc/internal/pkg/files"
     "io"
     "os"
 )
@@ -42,7 +43,7 @@ func Unzip(zipFile string, filter func(dest *zip.File) (string, os.FileMode)) er
             return err
         }
 
-        if err := WithOpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, targetMode, func(file *os.File) error {
+        if err := files.WithOpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, targetMode, func(file *os.File) error {
             _, err = io.Copy(file, zippedFile)
             return err
         }); err != nil {

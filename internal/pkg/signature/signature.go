@@ -1,4 +1,4 @@
-package pkgsign
+package signature
 
 import (
     "encoding/base64"

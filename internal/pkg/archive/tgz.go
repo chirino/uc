@@ -4,6 +4,7 @@ import (
     "archive/tar"
     "compress/gzip"
     "fmt"
+    "github.com/chirino/uc/internal/pkg/files"
     "io"
     "os"
 )
@@ -57,7 +58,7 @@ func Untgz(tgzFile string, filter func(dest *tar.Header) (string, os.FileMode)) 
             continue
         }
 
-        if err := WithOpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, targetMode, func(file *os.File) error {
+        if err := files.WithOpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, targetMode, func(file *os.File) error {
             _, err = io.Copy(file, tarReader)
             return err
         }); err != nil {
@@ -68,11 +69,3 @@ func Untgz(tgzFile string, filter func(dest *tar.Header) (string, os.FileMode)) 
     return nil
 }
 
-func WithOpenFile(name string, flag int, perm os.FileMode, action func(*os.File)error) error {
-    targetFile, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
-    if err != nil {
-        return err
-    }
-    defer targetFile.Close()
-    return action(targetFile)
-}
