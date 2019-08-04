@@ -1,8 +1,17 @@
 package files
 
-import "os"
+import (
+    "os"
+    "path/filepath"
+)
 
 func WithCreate(name string, action func(*os.File) error) error {
+    dir := filepath.Dir(name)
+    err := os.MkdirAll(dir, 0755)
+    if err != nil {
+        return err
+    }
+
     targetFile, err := os.Create(name)
     if err != nil {
         return err
