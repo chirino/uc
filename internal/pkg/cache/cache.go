@@ -16,13 +16,14 @@ import (
 )
 
 type Request struct {
-    URL              string
-    Signature        string
-    Size             int64
-    Version          string
+    URL              string                                `json:"url,omitempty"`
+    Signature        string                                `json:"signature,omitempty"`
+    Size             int64                                 `json:"size,omitempty"`
     ExtractZip       string                                `json:"extract-zip,omitempty"`
     ExtractTgz       string                                `json:"extract-tgz,omitempty"`
-    Uncompress       string                                `json:"extract-gz,omitempty"`
+    Uncompress       string                                `json:"uncompress,omitempty"`
+    Platform         string                                `json:"-"`
+    Version          string                                `json:"-"`
     CommandName      string                                `json:"-"`
     SkipVerification bool                                  `json:"-"`
     ForceDownload    bool                                  `json:"-"`
@@ -35,7 +36,7 @@ func Get(r *Request) (string, error) {
         return "", err
     }
 
-    targetExe := filepath.Join(dir, r.CommandName, r.Version, ExeSuffix(r.CommandName))
+    targetExe := filepath.Join(dir, r.CommandName, r.Version, r.Platform, ExeSuffix(r.CommandName))
 
     if !r.ForceDownload {
         exists, err := Exists(targetExe)

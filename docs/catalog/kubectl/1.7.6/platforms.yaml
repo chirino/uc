@@ -1,0 +1,15 @@
+darwin-amd64:
+  extract-tgz: kubernetes/client/bin/kubectl
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUZO3wAKCRCf8lmA9bp+T1K6AJ0bEcTrVc91llRd+5WRz1bo1j3yEwCeJyQDr1U1XEafRhuP1k8kEVD4Bp8=
+  size: 71834208
+  url: https://dl.k8s.io/v1.7.6/kubernetes-client-darwin-amd64.tar.gz
+linux-amd64:
+  extract-tgz: kubernetes/client/bin/kubectl
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUZO5AAKCRCf8lmA9bp+T7sQAKDR9Qr0QT3cmLftb2lsjh09VWBF5ACeLKbUrxZ4tS/trHmbdVfRcNOK9/I=
+  size: 72341627
+  url: https://dl.k8s.io/v1.7.6/kubernetes-client-linux-amd64.tar.gz
+windows-amd64:
+  extract-tgz: kubernetes/client/bin/kubectl.exe
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUZO2gAKCRCf8lmA9bp+T6ppAJ4h5Q1w2KAam87kP8YK9IjlA7Lh6gCfRGwObCth8fuyWMVOsL5yQ0vO3GY=
+  size: 72671232
+  url: https://dl.k8s.io/v1.7.6/kubernetes-client-windows-amd64.tar.gz

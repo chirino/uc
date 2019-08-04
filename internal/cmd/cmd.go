@@ -20,13 +20,12 @@ type CmdFactory func(options *Options, api *kubernetes.Clientset, serverVersion 
 var SubCmdFactories = []CmdFactory{}
 
 type CatalogConfig struct {
-    Update   string
-    Commands map[string]*CatalogCommand
+    Update   string                     `json:"update,omitempty"`
+    Commands map[string]*CatalogCommand `json:"commands,omitempty"`
 }
 
 type CatalogCommand struct {
-    // Versions[version][platform] => cache.Request
-    Versions map[string]map[string]*cache.Request
+    LatestVersion string `json:"latest-version,omitempty"`
 }
 
 type Options struct {
@@ -35,20 +34,13 @@ type Options struct {
     master     string
     cmdsAdded  bool
     Printf     func(format string, a ...interface{})
-    Config     *CatalogConfig
 }
 
 func New(ctx context.Context) (*cobra.Command, error) {
 
-    config, err := LoadConfig()
-    if err != nil {
-        return nil, err
-    }
-
-    o := Options {
+    o := Options{
         Context: ctx,
         Printf:  StdErrPrintf,
-        Config: config,
     }
 
     var cmd = cobra.Command{
@@ -110,21 +102,31 @@ func StdErrPrintf(format string, a ...interface{}) {
 }
 
 func GetExecutable(options *Options, command string, version string) (string, error) {
-    config := options.Config.Commands[command]
+    catalog, err := LoadCatalogConfig()
+    if err != nil {
+        return "", err
+    }
+
+    config := catalog.Commands[command]
     if config == nil {
         return "", fmt.Errorf("command not found in catalog: %s", command)
     }
 
-    platforms := config.Versions[version]
+    platforms, err := LoadCommandPlatforms(command, version)
+    if err != nil {
+        return "", err
+    }
     if platforms == nil {
         return "", fmt.Errorf("%s version not found in catalog: %s", command, version)
     }
+
     platform := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
     request := platforms[platform]
     if request == nil {
         return "", fmt.Errorf("%s %s platform not found in catalog: %s", command, version, platform)
     }
     request.CommandName = command
+    request.Platform = platform
     request.Version = version
     request.Printf = options.Printf
     return cache.Get(request)
@@ -148,4 +150,3 @@ func GetCobraCommand(options *Options, command string, clientVersion string) (*c
         },
     }, nil
 }
-
