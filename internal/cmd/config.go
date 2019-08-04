@@ -7,8 +7,10 @@ import (
     "github.com/chirino/uc/internal/pkg/cache"
     "github.com/chirino/uc/internal/pkg/files"
     "github.com/chirino/uc/internal/pkg/signature"
+    "github.com/chirino/uc/internal/pkg/user"
     "io/ioutil"
     "os"
+    "path/filepath"
     "sigs.k8s.io/yaml"
     "time"
 )
@@ -16,7 +18,7 @@ import (
 func LoadCatalogConfig() (*CatalogConfig, error) {
     home := user.HomeDir()
     if home == "" {
-        return "", fmt.Errorf("Cannot determine the user home directory")
+        return nil, fmt.Errorf("Cannot determine the user home directory")
     }
     path := filepath.Join(home, ".uc", "catalog.yaml")
     result := &CatalogConfig{}
@@ -27,7 +29,7 @@ func LoadCatalogConfig() (*CatalogConfig, error) {
 func LoadCommandPlatforms(command string, version string) (map[string]*cache.Request, error) {
     home := user.HomeDir()
     if home == "" {
-        return "", fmt.Errorf("Cannot determine the user home directory")
+        return nil, fmt.Errorf("Cannot determine the user home directory")
     }
 
     path := filepath.Join(home, ".uc", "catalog", command, version, "platforms.yaml")
@@ -37,7 +39,7 @@ func LoadCommandPlatforms(command string, version string) (map[string]*cache.Req
 }
 
 func downloadYamlWithSig(url string, path string, config interface{}) (error) {
-    catalogConfig, err := downloadFileWithSig(url, path)
+    err := downloadFileWithSig(url, path)
     if err != nil {
         return err
     }
@@ -62,7 +64,7 @@ func downloadYamlWithSig(url string, path string, config interface{}) (error) {
     return yaml.Unmarshal(bytes, config)
 }
 
-func downloadFileWithSig(url string, path string) (*CatalogConfig, error) {
+func downloadFileWithSig(url string, path string) error {
     downloadCatalog := false
     if info, err := os.Stat(path); err != nil || time.Now().After(info.ModTime().Add(24*time.Hour)) {
         downloadCatalog = true
@@ -72,15 +74,15 @@ func downloadFileWithSig(url string, path string) (*CatalogConfig, error) {
     }
     if downloadCatalog {
         if err := files.WithCreate(path+".sig", func(file *os.File) error {
-            return cache.HttpGet(".sig", file)
+            return cache.HttpGet(url+".sig", file)
         }); err != nil {
-            return nil, err
+            return err
         }
         if err := files.WithCreate(path, func(file *os.File) error {
             return cache.HttpGet(url, file)
         }); err != nil {
-            return nil, err
+            return err
         }
     }
-    return nil, nil
+    return nil
 }
