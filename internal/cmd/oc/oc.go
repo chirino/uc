@@ -22,7 +22,7 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info)
     serverVersion := info.Major + "." + info.Minor
     clientVersion := serverToClientVersionMap[serverVersion]
     if clientVersion == "" {
-        return nil, nil
+        clientVersion = "3.11.0"
     }
 
     return cmd.GetCobraCommand(options, "oc", clientVersion)

@@ -1,0 +1,12 @@
+darwin-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUXt8QAKCRCf8lmA9bp+T6sAAJ0dFvu1ycjReVarruAJAvftaeZh3wCgtGXni317FeKLPFA9SHhyW8czIjs=
+  size: 37057304
+  url: https://github.com/knative/client/releases/download/v0.2.0/kn-darwin-amd64
+linux-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUZG1AAKCRCf8lmA9bp+T/4uAJ0dh8Ts4FLoD6CETI/ulyzDXv4mLgCdEC02hbkUk2NxGKNyN00dqJCRqxM=
+  size: 37302948
+  url: https://github.com/knative/client/releases/download/v0.2.0/kn-linux-amd64
+windows-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXUZG1AAKCRCf8lmA9bp+T3m6AJ0R1PlfAV83MtEfSvXbu/QOXnyFUgCgvftzZYq9VjRJmoT7mut9177PxOs=
+  size: 37102080
+  url: https://github.com/knative/client/releases/download/v0.2.0/kn-windows-amd64.exe

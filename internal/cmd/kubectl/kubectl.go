@@ -16,13 +16,13 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info)
 
     // Todo: figure out best way select the best client version for the server we are connected to.
     serverToClientVersionMap := map[string]string{
-        "3.11.0": "3.11.0",
-        "1.12+":  "3.11.0",
+        "3.11.0": "1.14.0",
+        "1.12+":  "1.14.0",
     }
     serverVersion := info.Major + "." + info.Minor
     clientVersion := serverToClientVersionMap[serverVersion]
     if clientVersion == "" {
-        return nil, nil
+        clientVersion = "1.14.0"
     }
 
     return cmd.GetCobraCommand(options, "kubectl", clientVersion)
