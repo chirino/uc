@@ -40,7 +40,7 @@ type Options struct {
 
 func New(ctx context.Context) (*cobra.Command, error) {
 
-    config, err := loadConfig()
+    config, err := LoadConfig()
     if err != nil {
         return nil, err
     }

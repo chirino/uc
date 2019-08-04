@@ -9,6 +9,7 @@ import (
     _ "github.com/chirino/uc/internal/cmd/kubectl"
     _ "github.com/chirino/uc/internal/cmd/oc"
     _ "github.com/chirino/uc/internal/cmd/odo"
+    _ "github.com/chirino/uc/internal/cmd/updatecat"
     _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
     "math/rand"
     "os"
