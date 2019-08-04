@@ -7,7 +7,6 @@ import (
     "github.com/chirino/uc/internal/pkg/cache"
     "github.com/chirino/uc/internal/pkg/user"
     "github.com/spf13/cobra"
-    "k8s.io/apimachinery/pkg/version"
     "k8s.io/client-go/kubernetes"
     "k8s.io/client-go/tools/clientcmd"
     "os"
@@ -15,7 +14,7 @@ import (
     "runtime"
 )
 
-type CmdFactory func(options *Options, api *kubernetes.Clientset, serverVersion *version.Info) (*cobra.Command, error)
+type CmdFactory func(options *Options, api *kubernetes.Clientset) (*cobra.Command, error)
 
 var SubCmdFactories = []CmdFactory{}
 
@@ -25,6 +24,8 @@ type CatalogConfig struct {
 }
 
 type CatalogCommand struct {
+    Short         string `json:"short-description,omitempty"`
+    Long          string `json:"long-description,omitempty"`
     LatestVersion string `json:"latest-version,omitempty"`
 }
 
@@ -62,6 +63,7 @@ func New(ctx context.Context) (*cobra.Command, error) {
 
     cmd.Flags().StringVarP(&o.kubeconfig, "kubeconfig", "", filepath.Join(user.HomeDir(), ".kube", "config"), "path to the kubeconfig file")
     cmd.Flags().StringVarP(&o.master, "master", "", "", "master url")
+    cmd.DisableAutoGenTag = true
 
     return &cmd, nil
 }
@@ -69,30 +71,53 @@ func New(ctx context.Context) (*cobra.Command, error) {
 func (o *Options) Run(cmd *cobra.Command, args []string) error {
     if !o.cmdsAdded {
 
+        var api *kubernetes.Clientset = nil
         config, err := clientcmd.BuildConfigFromFlags(o.master, o.kubeconfig)
-        if err != nil {
-            return err
+        if err == nil {
+            api, err = kubernetes.NewForConfig(config)
+            if err != nil {
+                return err
+            }
         }
 
-        api, err := kubernetes.NewForConfig(config)
-        if err != nil {
-            return err
-        }
-
-        serverVersion, err := api.ServerVersion()
-        if err != nil {
-            return err
-        }
-
+        subcommands := map[string]*cobra.Command{}
         for _, cmdFactory := range SubCmdFactories {
-            subCommand, err := cmdFactory(o, api, serverVersion)
+            subCommand, err := cmdFactory(o, api)
             if err != nil {
                 return err
             }
             if subCommand != nil {
+                subcommands[subCommand.Use] = subCommand
                 cmd.AddCommand(subCommand)
             }
         }
+
+        // Catalog sig might be invalid when it's being updated manually, and
+        // we need to run the update-catalog command..
+        catalog, err := LoadCatalogConfig()
+        if err == nil {
+            for command, c := range catalog.Commands {
+                subCommand := subcommands[command]
+                if subCommand == nil {
+                    subCommand,err = GetCobraCommand(o, command, "latest")
+                    if err != nil {
+                        return err
+                    }
+                    subcommands[command] = subCommand
+                    cmd.AddCommand(subCommand)
+                }
+                if c.Short!="" {
+                    subCommand.Short = c.Short
+                }
+                if c.Long!="" {
+                    subCommand.Long = c.Long
+                }
+                subCommand.Use = command
+                subCommand.DisableFlagParsing = true
+                subCommand.DisableAutoGenTag = true
+            }
+        }
+
     }
     return nil
 }
@@ -110,6 +135,10 @@ func GetExecutable(options *Options, command string, version string) (string, er
     config := catalog.Commands[command]
     if config == nil {
         return "", fmt.Errorf("command not found in catalog: %s", command)
+    }
+
+    if version == "latest" {
+        version = config.LatestVersion
     }
 
     platforms, err := LoadCommandPlatforms(command, version)

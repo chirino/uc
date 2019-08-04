@@ -11,7 +11,6 @@ import (
     "github.com/chirino/uc/internal/pkg/dev"
     "github.com/spf13/cobra"
     "io/ioutil"
-    "k8s.io/apimachinery/pkg/version"
     "k8s.io/client-go/kubernetes"
     "net/http"
     "os"
@@ -24,10 +23,11 @@ func init() {
     cmd.SubCmdFactories = append(cmd.SubCmdFactories, NewCmd)
 }
 
-func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info) (*cobra.Command, error) {
+func NewCmd(options *cmd.Options, api *kubernetes.Clientset) (*cobra.Command, error) {
     var forceDownload = false
     command := &cobra.Command{
-        Use: "update-catalog",
+        Use:   "update-catalog",
+        Short: "Updates and GPG signs the local uc catalog (only available when built with --tags dev)",
         RunE: func(c *cobra.Command, args []string) error {
             return run(forceDownload)
         },
@@ -190,7 +190,7 @@ minor:
             version := fmt.Sprintf("1.%d.%d", minor, micro)
 
             platforms := map[string]*cache.Request{}
-            fn := filepath.Join(dev.GO_MOD_DIRECTORY, "docs",  "catalog", command, version, "platforms.yaml")
+            fn := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version, "platforms.yaml")
             _, err := os.Stat(fn)
             if err == nil {
                 platforms := map[string]*cache.Request{}
@@ -219,12 +219,12 @@ minor:
                         file += ".exe"
                     }
                     platforms[platform] = &cache.Request{
-                        URL:        url,
-                        ExtractTgz: file,
+                        URL:           url,
+                        ExtractTgz:    file,
                         ForceDownload: forceDownload,
-                        CommandName: command,
-                        Version: version,
-                        Platform: platform,
+                        CommandName:   command,
+                        Version:       version,
+                        Platform:      platform,
                     }
                     updated, err := checkDownload(platforms[platform])
                     if err != nil {

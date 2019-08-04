@@ -4,27 +4,23 @@ package kubectl
 import (
     "github.com/chirino/uc/internal/cmd"
     "github.com/spf13/cobra"
-    "k8s.io/apimachinery/pkg/version"
     "k8s.io/client-go/kubernetes"
+    "strings"
 )
 
 func init() {
     cmd.SubCmdFactories = append(cmd.SubCmdFactories, NewCmd)
 }
 
-func NewCmd(options *cmd.Options, api *kubernetes.Clientset, info *version.Info) (*cobra.Command, error) {
-
-    // Todo: figure out best way select the best client version for the server we are connected to.
-    serverToClientVersionMap := map[string]string{
-        "3.11.0": "1.14.0",
-        "1.12+":  "1.14.0",
+func NewCmd(options *cmd.Options, api *kubernetes.Clientset) (*cobra.Command, error) {
+    clientVersion := "latest"
+    if api!=nil {
+        info, err := api.ServerVersion()
+        if err != nil {
+            return nil, err
+        }
+        clientVersion = strings.Split(strings.TrimPrefix(info.GitVersion, "v"), "-")[0]
     }
-    serverVersion := info.Major + "." + info.Minor
-    clientVersion := serverToClientVersionMap[serverVersion]
-    if clientVersion == "" {
-        clientVersion = "1.14.0"
-    }
-
     return cmd.GetCobraCommand(options, "kubectl", clientVersion)
 }
 

@@ -1,11 +1,20 @@
 commands:
   kamel:
     latest-version: 1.0.0-M1
+    short-description: Manage your Apache Camel K integrations
+    long-description: |
+      Apache Camel K is a lightweight integration framework
+      built from Apache Camel that runs natively on Kubernetes and is
+      specifically designed for serverless and microservice architectures.
   kn:
     latest-version: 0.2.0
+    short-description: Manage your Knative building blocks
   kubectl:
-    latest-version: 1.16.0
+    latest-version: 1.15.1
+    short-description: Controls the Kubernetes cluster manager
   oc:
     latest-version: 3.11.0
+    short-description: OpenShift Client
   odo:
     latest-version: 1.0.0-beta3
+    short-description: Developer-focused CLI for OpenShift
