@@ -3,6 +3,7 @@ package kubectl
 
 import (
 	"github.com/chirino/uc/internal/cmd"
+	"github.com/chirino/uc/internal/cmd/utils"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/kubernetes"
 	"strings"
@@ -20,5 +21,5 @@ func NewCmd(options *cmd.Options, api *kubernetes.Clientset) (*cobra.Command, er
 			clientVersion = strings.Split(strings.TrimPrefix(info.GitVersion, "v"), "-")[0]
 		}
 	}
-	return cmd.GetCobraCommand(options, "kubectl", clientVersion)
+	return utils.GetCobraCommand(options, "kubectl", clientVersion)
 }
