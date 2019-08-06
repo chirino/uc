@@ -15,6 +15,7 @@ import (
 
 type Options struct {
 	cmd.Options
+	cmdsAdded bool
 }
 
 func New(ctx context.Context) (*cobra.Command, error) {
@@ -30,13 +31,13 @@ func New(ctx context.Context) (*cobra.Command, error) {
 		Long:              `uber client runs sub commands using clients at the version that are compatible with the cluster your logged into.`,
 		PersistentPreRunE: o.Run,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if o.CmdsAdded {
+			if o.cmdsAdded {
 				return fmt.Errorf("invalid usage")
 			}
 			return nil
 		},
 		PersistentPostRun: func(cmd *cobra.Command, args []string) {
-			o.CmdsAdded = true
+			o.cmdsAdded = true
 		},
 	}
 
@@ -48,7 +49,7 @@ func New(ctx context.Context) (*cobra.Command, error) {
 }
 
 func (o *Options) Run(parent *cobra.Command, args []string) error {
-	if !o.CmdsAdded {
+	if !o.cmdsAdded {
 
 		var api *kubernetes.Clientset = nil
 		config, err := clientcmd.BuildConfigFromFlags(o.Master, o.Kubeconfig)
