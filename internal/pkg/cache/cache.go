@@ -162,7 +162,6 @@ func Verify(r *Request, file string) error {
         return fmt.Errorf("downloaded file is %d bytes, expected %d bytes", i.Size(), r.Size)
     }
 
-    r.Printf("checking digital signature of: %s\n", file)
     return signature.CheckSignature(r.Signature, file)
 }
 

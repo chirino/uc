@@ -24,7 +24,7 @@ func main() {
     ExitOnError(err)
 
     exeName := filepath.Base(os.Args[0])
-    if !strings.Contains(exeName, "go_build_main_go") {
+    if !strings.HasPrefix(exeName, "___go_build_") {
         cmd.Use = exeName
     }
     // First time discovers sub commands..
