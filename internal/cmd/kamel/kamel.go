@@ -3,6 +3,7 @@ package kamel
 
 import (
 	"github.com/chirino/uc/internal/cmd"
+	"github.com/chirino/uc/internal/cmd/utils"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/kubernetes"
 )
@@ -14,5 +15,5 @@ func init() {
 func NewCmd(options *cmd.Options, api *kubernetes.Clientset) (*cobra.Command, error) {
 	// Todo: figure out how to pick the best client version for the server we are connected against.
 	clientVersion := "latest"
-	return cmd.GetCobraCommand(options, "kamel", clientVersion)
+	return utils.GetCobraCommand(options, "kamel", clientVersion)
 }

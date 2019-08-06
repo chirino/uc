@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/chirino/uc/internal/cmd"
 	_ "github.com/chirino/uc/internal/cmd/kamel"
 	_ "github.com/chirino/uc/internal/cmd/kubectl"
+	"github.com/chirino/uc/internal/cmd/uc"
 	_ "github.com/chirino/uc/internal/cmd/updatecat"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"math/rand"
@@ -20,7 +20,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel() // Cancel ctx as soon as main returns
 
-	cmd, err := cmd.New(ctx)
+	cmd, err := uc.New(ctx)
 	ExitOnError(err)
 
 	// in case our binary gets renamed, use that in
