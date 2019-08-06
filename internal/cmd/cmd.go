@@ -12,7 +12,6 @@ type Options struct {
 	Context    context.Context
 	Kubeconfig string
 	Master     string
-	CmdsAdded  bool
 	Printf     func(format string, a ...interface{})
 }
 
