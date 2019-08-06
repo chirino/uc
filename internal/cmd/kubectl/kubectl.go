@@ -1,4 +1,4 @@
-// This package implements a sub command plugin for oc.
+// This package implements a sub command plugin for kubectl.
 package kubectl
 
 import (

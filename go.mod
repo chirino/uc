@@ -3,7 +3,7 @@ module github.com/chirino/uc
 go 1.12
 
 require (
-	github.com/chirino/hawtgo v0.0.0-20190728030238-0d67973a5907
+	github.com/chirino/hawtgo v0.0.0-20190806225532-d2e9dba05aeb
 	github.com/googleapis/gnostic v0.3.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/spf13/cobra v0.0.5
@@ -12,7 +12,6 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	k8s.io/api v0.0.0-20190731142925-739c7f7721ed // indirect
-	k8s.io/apimachinery v0.0.0-20190731142807-035e418f1ad9
 	k8s.io/client-go v0.0.0-20190620085101-78d2af792bab
 	k8s.io/klog v0.3.3 // indirect
 	k8s.io/utils v0.0.0-20190801114015-581e00157fb1 // indirect
