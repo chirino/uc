@@ -157,7 +157,7 @@ func sign(file string) error {
 func checkDownload(request *cache.Request) (bool, error) {
 	fmt.Printf("Checking %s, %s, %s\n", request.CommandName, request.Version, request.Platform)
 	request.SkipVerification = true
-	request.Printf = cmd.StdErrPrintf
+	request.InfoLog = os.Stderr
 	file, err := cache.Get(request)
 	if err != nil {
 		return false, err

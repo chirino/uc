@@ -36,12 +36,18 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 	platform := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
 	request := platforms[platform]
 	if request == nil {
-		return "", fmt.Errorf("%s %s platform not found in catalog: %s", command, version, platform)
+		supported := []string{}
+		for p, _ := range platforms {
+			supported = append(supported, p)
+		}
+		return "", fmt.Errorf("your platform %s is not supported by the %s command, it is available on: %s", platform, command, version, platform, supported)
 	}
+
 	request.CommandName = command
 	request.Platform = platform
 	request.Version = version
-	request.Printf = options.InfoF
+	request.InfoLog = options.InfoLog
+	request.DebugLog = options.DebugLog
 	return cache.Get(request)
 }
 
@@ -58,7 +64,7 @@ func GetCobraCommand(options *cmd.Options, command string, clientVersion string)
 			}
 
 			// call it pass along any args....
-			return sh.New().LineArgs(append([]string{executable}, args...)...).Exec()
+			return sh.New().CommandLog(options.DebugLog).CommandLogPrefix("running > ").LineArgs(append([]string{executable}, args...)...).Exec()
 		},
 	}, nil
 }
