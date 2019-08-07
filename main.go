@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"github.com/chirino/uc/internal/cmd"
+	_ "github.com/chirino/uc/internal/cmd/catalog"
 	_ "github.com/chirino/uc/internal/cmd/kamel"
 	_ "github.com/chirino/uc/internal/cmd/kubectl"
 	"github.com/chirino/uc/internal/cmd/uc"
-	_ "github.com/chirino/uc/internal/cmd/updatecat"
+	"github.com/chirino/uc/internal/cmd/utils"
 	"github.com/spf13/pflag"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"math/rand"
@@ -24,10 +24,7 @@ func main() {
 	cmd, err := uc.New(&cmd.Options{
 		Context: ctx,
 	})
-	if err != nil {
-		fmt.Println("error:", err)
-		os.Exit(1)
-	}
+	utils.ExitOnError(err)
 
 	err = cmd.Execute()
 
@@ -38,9 +35,6 @@ func main() {
 		cmd.Help()
 		os.Exit(0)
 	default:
-		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
-		}
+		utils.ExitOnError(err)
 	}
 }

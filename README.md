@@ -33,7 +33,11 @@ Invoke `uc` with
     
     Available Commands:
       help        Help about any command
-      kamel       
+      kamel       Manage your Apache Camel K integrations
+      kn          Manage your Knative building blocks
+      kubectl     Controls the Kubernetes cluster manager
+      oc          OpenShift Client
+      odo         Developer-focused CLI for OpenShift
     
     Flags:
           --cache-expires string   Controls when the catalog and command caches expire. One of *duration*|never|now (default "24h")
@@ -43,8 +47,6 @@ Invoke `uc` with
       -v, --verbosity string       Sets the verbosity level: One of none|info|debug (default "info")
     
     Use "uc [command] --help" for more information about a command.
-
-
 
 ## How it works
 
@@ -61,3 +63,4 @@ The version of the sub command executable use can vary based on the cluster your
 the version for `kubectl` selected will match match the Kubernetes server version your connected against.  For 
 other sub commands which we do not have a good way of selecting the best version based on the cluster
 state, we will used the latest version released.
+
