@@ -7,6 +7,7 @@ import (
 	"github.com/chirino/uc/internal/pkg/catalog"
 	"github.com/chirino/uc/internal/pkg/user"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,9 +15,9 @@ import (
 )
 
 func New(o *cmd.Options) (*cobra.Command, error) {
-	if o.InfoF == nil {
-		o.InfoF = cmd.StdErrPrintf
-		o.DebugF = cmd.NoopPrintf
+	if o.InfoLog == nil {
+		o.InfoLog = os.Stderr
+		o.DebugLog = ioutil.Discard
 	}
 	o.CacheExpires = time.Now().Add(10000 * time.Hour)
 
@@ -66,14 +67,14 @@ against the cluster that you are connected to.`,
 
 		switch strings.ToLower(verbosity) {
 		case "none":
-			o.InfoF = cmd.NoopPrintf
-			o.DebugF = cmd.NoopPrintf
+			o.InfoLog = ioutil.Discard
+			o.DebugLog = ioutil.Discard
 		case "info":
-			o.InfoF = cmd.StdErrPrintf
-			o.DebugF = cmd.NoopPrintf
+			o.InfoLog = os.Stderr
+			o.DebugLog = ioutil.Discard
 		case "debug":
-			o.InfoF = cmd.StdErrPrintf
-			o.DebugF = cmd.StdErrPrintf
+			o.InfoLog = os.Stderr
+			o.DebugLog = os.Stderr
 		default:
 			return fmt.Errorf("invalid flag value --verbosity '%s'", verbosity)
 		}

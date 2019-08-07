@@ -3,7 +3,7 @@ module github.com/chirino/uc
 go 1.12
 
 require (
-	github.com/chirino/hawtgo v0.0.0-20190807012006-aaec45085709
+	github.com/chirino/hawtgo v0.0.0-20190807152901-3f367d1def93
 	github.com/googleapis/gnostic v0.3.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/spf13/cobra v0.0.5

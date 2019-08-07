@@ -3,6 +3,7 @@
 package catalog
 
 import (
+	"fmt"
 	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/pkg/cache"
 	"github.com/chirino/uc/internal/pkg/dev"
@@ -13,7 +14,7 @@ import (
 )
 
 func LoadCatalogConfig(o *cmd.Options) (*CatalogConfig, error) {
-	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog.yaml")
+	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", "index.yaml")
 	result := &CatalogConfig{}
 	err := loadConfig(o, path, result)
 	return result, err
@@ -27,12 +28,12 @@ func LoadCommandPlatforms(o *cmd.Options, command string, version string) (map[s
 }
 
 func loadConfig(o *cmd.Options, path string, config interface{}) error {
-	o.DebugF("dev mode: checking file signature: %s\n", path)
+	fmt.Fprintln(o.DebugLog, "dev mode: checking file signature:", path)
 	err := CheckSigatureAgainstSigFile(path)
 	if err != nil {
 		return err
 	}
-	o.DebugF("dev mode: loading: %s\n", path)
+	fmt.Fprintln(o.DebugLog, "dev mode: loading:", path)
 	file, err := os.Open(path)
 	if err != nil {
 		return err
