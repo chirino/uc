@@ -12,7 +12,6 @@ import (
 	"github.com/chirino/uc/internal/pkg/dev"
 	"github.com/spf13/cobra"
 	"io/ioutil"
-	"k8s.io/client-go/kubernetes"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -21,10 +20,10 @@ import (
 )
 
 func init() {
-	cmd.SubCmdFactories = append(cmd.SubCmdFactories, NewCmd)
+	cmd.SubCommandFactories = append(cmd.SubCommandFactories, NewCmd)
 }
 
-func NewCmd(options *cmd.Options, api *kubernetes.Clientset) (*cobra.Command, error) {
+func NewCmd(options *cmd.Options) (*cobra.Command, error) {
 	var forceDownload = false
 	command := &cobra.Command{
 		Use:   "update-catalog",
