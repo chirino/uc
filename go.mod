@@ -3,9 +3,10 @@ module github.com/chirino/uc
 go 1.12
 
 require (
-	github.com/chirino/hawtgo v0.0.0-20190807152901-3f367d1def93
+	github.com/chirino/hawtgo v0.0.0-20190807190259-475db1a4c1c2
 	github.com/googleapis/gnostic v0.3.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
+	github.com/magefile/mage v1.8.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
@@ -19,3 +20,5 @@ require (
 	sigs.k8s.io/yaml v1.1.0
 
 )
+
+// replace github.com/chirino/hawtgo => /Users/chirino/sandbox/hawtgo

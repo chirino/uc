@@ -20,3 +20,5 @@
 .DS_Store
 Thumbs.db
 .directory
+/dist
+/build
