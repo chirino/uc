@@ -1,15 +1,15 @@
 package signature
 
 import (
-    "encoding/base64"
-    "fmt"
-    "golang.org/x/crypto/openpgp"
-    "io/ioutil"
-    "os"
-    "strings"
+	"encoding/base64"
+	"fmt"
+	"golang.org/x/crypto/openpgp"
+	"io/ioutil"
+	"os"
+	"strings"
 )
 
-var SignatureVerificationPublicKey = `
+var DefaultPublicKey = `
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Comment: GPGTools - http://gpgtools.org
 
@@ -40,39 +40,39 @@ tUl2fIH1uA==
 -----END PGP PUBLIC KEY BLOCK-----
 `
 
-var keyring openpgp.EntityList = nil
+var DefaultPublicKeyring openpgp.EntityList = nil
 
 func init() {
-    k, err := openpgp.ReadArmoredKeyRing(strings.NewReader(SignatureVerificationPublicKey))
-    if err != nil {
-        panic("Invalid SignatureVerificationPublicKey: " + err.Error())
-    }
-    keyring = k
+	k, err := openpgp.ReadArmoredKeyRing(strings.NewReader(DefaultPublicKey))
+	if err != nil {
+		panic("Invalid SignatureVerificationPublicKey: " + err.Error())
+	}
+	DefaultPublicKeyring = k
 }
 
 func Base64Decode(base64String string) (string, error) {
-    decoder := base64.NewDecoder(base64.StdEncoding, strings.NewReader(base64String))
-    decoded, err := ioutil.ReadAll(decoder)
-    if err != nil {
-        return "", err
-    }
-    return string(decoded), nil
+	decoder := base64.NewDecoder(base64.StdEncoding, strings.NewReader(base64String))
+	decoded, err := ioutil.ReadAll(decoder)
+	if err != nil {
+		return "", err
+	}
+	return string(decoded), nil
 }
 
-func CheckSignature(base64Sig string, file string) error {
-    signed, err := os.Open(file)
-    if err != nil {
-        return fmt.Errorf("read file: " + err.Error())
-    }
+func CheckSignature(keyring openpgp.EntityList, base64Sig string, file string) error {
+	signed, err := os.Open(file)
+	if err != nil {
+		return fmt.Errorf("read file: " + err.Error())
+	}
 
-    signature, err := Base64Decode(base64Sig)
-    if err != nil {
-        return fmt.Errorf("invalid signature: " + err.Error())
-    }
+	signature, err := Base64Decode(base64Sig)
+	if err != nil {
+		return fmt.Errorf("invalid signature: " + err.Error())
+	}
 
-    _, err = openpgp.CheckDetachedSignature(keyring, signed, strings.NewReader(signature))
-    if err != nil {
-        return fmt.Errorf("signature check failure: " + err.Error())
-    }
-    return nil
+	_, err = openpgp.CheckDetachedSignature(keyring, signed, strings.NewReader(signature))
+	if err != nil {
+		return fmt.Errorf("signature check failure: " + err.Error())
+	}
+	return nil
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/chirino/uc/internal/pkg/cache"
 	"github.com/chirino/uc/internal/pkg/catalog"
 	"github.com/chirino/uc/internal/pkg/dev"
+	"github.com/chirino/uc/internal/pkg/signature"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"net/http"
@@ -42,7 +43,7 @@ func run(forceDownload bool) error {
 	docsDir := filepath.Join(dev.GO_MOD_DIRECTORY, "docs")
 	catalogFileName := filepath.Join(docsDir, "catalog.yaml")
 
-	cat := &catalog.CatalogConfig{}
+	cat := &cmd.CatalogIndex{}
 	err := loadYaml(catalogFileName, cat)
 	if err != nil {
 		return err
@@ -114,7 +115,7 @@ func forCommandPlatforms(command string, action func(version string, file string
 }
 
 func signIfNeeded(fn string) error {
-	err := catalog.CheckSigatureAgainstSigFile(fn)
+	err := catalog.CheckSigatureAgainstSigFile(signature.DefaultPublicKeyring, fn)
 	if err != nil {
 		err = sign(fn)
 		if err != nil {
@@ -156,13 +157,13 @@ func sign(file string) error {
 
 func checkDownload(request *cache.Request) (bool, error) {
 	fmt.Printf("Checking %s, %s, %s\n", request.CommandName, request.Version, request.Platform)
-	request.SkipVerification = true
+	request.Keyring = nil
 	request.InfoLog = os.Stderr
 	file, err := cache.Get(request)
 	if err != nil {
 		return false, err
 	}
-	request.SkipVerification = false
+	request.Keyring = signature.DefaultPublicKeyring
 	if request.Size != 0 && request.Signature != "" {
 		if err := cache.Verify(request, file); err != nil {
 			fmt.Println("verification failed: ", err)
@@ -181,7 +182,7 @@ func checkDownload(request *cache.Request) (bool, error) {
 	return false, nil
 }
 
-func findNewKubectlReleases(cat *catalog.CatalogConfig, forceDownload bool) error {
+func findNewKubectlReleases(cat *cmd.CatalogIndex, forceDownload bool) error {
 	command := "kubectl"
 minor:
 	for minor := 15; ; minor++ {
