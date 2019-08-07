@@ -7,29 +7,31 @@ import (
 	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/pkg/cache"
 	"github.com/chirino/uc/internal/pkg/dev"
+	"github.com/chirino/uc/internal/pkg/signature"
+	"golang.org/x/crypto/openpgp"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sigs.k8s.io/yaml"
 )
 
-func LoadCatalogConfig(o *cmd.Options) (*CatalogConfig, error) {
+func LoadCatalogIndex(o *cmd.Options) (*cmd.CatalogIndex, error) {
 	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", "index.yaml")
-	result := &CatalogConfig{}
-	err := loadConfig(o, path, result)
+	result := &cmd.CatalogIndex{}
+	err := load(o, signature.DefaultPublicKeyring, path, result)
 	return result, err
 }
 
-func LoadCommandPlatforms(o *cmd.Options, command string, version string) (map[string]*cache.Request, error) {
+func LoadCommandPlatforms(o *cmd.Options, keyring openpgp.EntityList, catalogBaseURL string, command string, version string) (map[string]*cache.Request, error) {
 	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version, "platforms.yaml")
 	result := map[string]*cache.Request{}
-	err := loadConfig(o, path, &result)
+	err := load(o, keyring, path, &result)
 	return result, err
 }
 
-func loadConfig(o *cmd.Options, path string, config interface{}) error {
+func load(o *cmd.Options, keyring openpgp.EntityList, path string, config interface{}) error {
 	fmt.Fprintln(o.DebugLog, "dev mode: checking file signature:", path)
-	err := CheckSigatureAgainstSigFile(path)
+	err := CheckSigatureAgainstSigFile(keyring, path)
 	if err != nil {
 		return err
 	}

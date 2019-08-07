@@ -17,6 +17,20 @@ type Options struct {
 	CacheExpires time.Time
 	InfoLog      io.Writer
 	DebugLog     io.Writer
+	CatalogIndex *CatalogIndex
+}
+
+type CatalogIndex struct {
+	Update   string                     `json:"update,omitempty"`
+	Commands map[string]*CatalogCommand `json:"commands,omitempty"`
+}
+
+type CatalogCommand struct {
+	Short            string `json:"short-description,omitempty"`
+	Long             string `json:"long-description,omitempty"`
+	LatestVersion    string `json:"latest-version,omitempty"`
+	CatalogBaseURL   string `json:"catalog-base-url,omitempty"`
+	CatalogPublicKey string `json:"catalog-public-key,omitempty"`
 }
 
 type SubCommandFactory func(options *Options) (*cobra.Command, error)

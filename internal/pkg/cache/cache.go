@@ -6,6 +6,7 @@ import (
 	"github.com/chirino/uc/internal/pkg/archive"
 	"github.com/chirino/uc/internal/pkg/signature"
 	"github.com/chirino/uc/internal/pkg/user"
+	"golang.org/x/crypto/openpgp"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,19 +17,19 @@ import (
 )
 
 type Request struct {
-	URL              string    `json:"url,omitempty"`
-	Signature        string    `json:"signature,omitempty"`
-	Size             int64     `json:"size,omitempty"`
-	ExtractZip       string    `json:"extract-zip,omitempty"`
-	ExtractTgz       string    `json:"extract-tgz,omitempty"`
-	Uncompress       string    `json:"uncompress,omitempty"`
-	Platform         string    `json:"-"`
-	Version          string    `json:"-"`
-	CommandName      string    `json:"-"`
-	SkipVerification bool      `json:"-"`
-	ForceDownload    bool      `json:"-"`
-	InfoLog          io.Writer `json:"-"`
-	DebugLog         io.Writer `json:"-"`
+	URL           string             `json:"url,omitempty"`
+	Signature     string             `json:"signature,omitempty"`
+	Size          int64              `json:"size,omitempty"`
+	ExtractZip    string             `json:"extract-zip,omitempty"`
+	ExtractTgz    string             `json:"extract-tgz,omitempty"`
+	Uncompress    string             `json:"uncompress,omitempty"`
+	Platform      string             `json:"-"`
+	Version       string             `json:"-"`
+	CommandName   string             `json:"-"`
+	ForceDownload bool               `json:"-"`
+	InfoLog       io.Writer          `json:"-"`
+	DebugLog      io.Writer          `json:"-"`
+	Keyring       openpgp.EntityList `json:"-"`
 }
 
 func Get(r *Request) (string, error) {
@@ -114,14 +115,14 @@ func DownloadToTempFile(r *Request) (string, error) {
 	}
 	defer to.Close()
 
-	fmt.Fprintln(r.InfoLog, "downloading: %s", r.URL)
+	fmt.Fprintln(r.InfoLog, "downloading:", r.URL)
 	err = HttpGet(r.URL, to)
 	if err != nil {
 		to.Close()
 		os.Remove(to.Name())
 		return "", err
 	}
-	fmt.Fprintln(r.InfoLog, "done: %s", r.URL)
+	fmt.Fprintln(r.InfoLog, "done:", r.URL)
 	return to.Name(), nil
 }
 
@@ -150,7 +151,7 @@ func HttpGet(url string, to io.Writer) error {
 }
 
 func Verify(r *Request, file string) error {
-	if r.SkipVerification {
+	if r.Keyring == nil {
 		return nil
 	}
 
@@ -163,7 +164,7 @@ func Verify(r *Request, file string) error {
 		return fmt.Errorf("downloaded file is %d bytes, expected %d bytes", i.Size(), r.Size)
 	}
 
-	return signature.CheckSignature(r.Signature, file)
+	return signature.CheckSignature(r.Keyring, r.Signature, file)
 }
 
 func CacheDownloadPath() (string, error) {

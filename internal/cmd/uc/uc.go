@@ -106,7 +106,7 @@ func addSubcommands(o *cmd.Options, result *cobra.Command) error {
 	// options are not yet parsed from the CLI flags, so this basically using
 	// --cache-expires never to avoid a doing a network round trip. After parsing this will
 	// called against when a sub command is invoked with the right --cache-expires config
-	catalog, err := catalog.LoadCatalogConfig(o)
+	catalog, err := catalog.LoadCatalogIndex(o)
 	if err == nil {
 		for command, c := range catalog.Commands {
 			subCommand := subcommands[command]
