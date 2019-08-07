@@ -5,21 +5,22 @@ import (
 	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/cmd/utils"
 	"github.com/spf13/cobra"
-	"k8s.io/client-go/kubernetes"
 	"strings"
 )
 
 func init() {
-	cmd.SubCmdFactories = append(cmd.SubCmdFactories, NewCmd)
+	cmd.SubCommandFactories = append(cmd.SubCommandFactories, NewCmd)
 }
 
-func NewCmd(options *cmd.Options, api *kubernetes.Clientset) (*cobra.Command, error) {
+func NewCmd(options *cmd.Options) (*cobra.Command, error) {
 	clientVersion := "latest"
-	if api != nil {
-		info, err := api.ServerVersion()
-		if err == nil {
-			clientVersion = strings.Split(strings.TrimPrefix(info.GitVersion, "v"), "-")[0]
-		}
+	api, err := options.NewApiClient()
+	if err == nil {
+		return nil, err
+	}
+	info, err := api.ServerVersion()
+	if err == nil {
+		clientVersion = strings.Split(strings.TrimPrefix(info.GitVersion, "v"), "-")[0]
 	}
 	return utils.GetCobraCommand(options, "kubectl", clientVersion)
 }
