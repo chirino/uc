@@ -4,6 +4,7 @@ package catalog
 
 import (
 	"fmt"
+	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/pkg/cache"
 	"github.com/chirino/uc/internal/pkg/files"
 	"github.com/chirino/uc/internal/pkg/signature"
@@ -12,21 +13,20 @@ import (
 	"os"
 	"path/filepath"
 	"sigs.k8s.io/yaml"
-	"time"
 )
 
-func LoadCatalogConfig() (*CatalogConfig, error) {
+func LoadCatalogConfig(o *cmd.Options) (*CatalogConfig, error) {
 	home := user.HomeDir()
 	if home == "" {
 		return nil, fmt.Errorf("Cannot determine the user home directory")
 	}
 	path := filepath.Join(home, ".uc", "catalog.yaml")
 	result := &CatalogConfig{}
-	err := downloadYamlWithSig("https://chirino.github.io/uc/catalog.yaml", path, result)
+	err := downloadYamlWithSig(o, "https://chirino.github.io/uc/catalog.yaml", path, result)
 	return result, err
 }
 
-func LoadCommandPlatforms(command string, version string) (map[string]*cache.Request, error) {
+func LoadCommandPlatforms(o *cmd.Options, command string, version string) (map[string]*cache.Request, error) {
 	home := user.HomeDir()
 	if home == "" {
 		return nil, fmt.Errorf("Cannot determine the user home directory")
@@ -34,12 +34,13 @@ func LoadCommandPlatforms(command string, version string) (map[string]*cache.Req
 
 	path := filepath.Join(home, ".uc", "catalog", command, version, "platforms.yaml")
 	result := map[string]*cache.Request{}
-	err := downloadYamlWithSig(fmt.Sprintf("https://chirino.github.io/uc/catalog/%s/%s/platforms.yaml", command, version), path, &result)
+	url := fmt.Sprintf("https://chirino.github.io/uc/catalog/%s/%s/platforms.yaml", command, version)
+	err := downloadYamlWithSig(o, url, path, &result)
 	return result, err
 }
 
-func downloadYamlWithSig(url string, path string, config interface{}) error {
-	err := downloadFileWithSig(url, path)
+func downloadYamlWithSig(o *cmd.Options, url string, path string, config interface{}) error {
+	err := downloadFileWithSig(o, url, path)
 	if err != nil {
 		return err
 	}
@@ -64,25 +65,47 @@ func downloadYamlWithSig(url string, path string, config interface{}) error {
 	return yaml.Unmarshal(bytes, config)
 }
 
-func downloadFileWithSig(url string, path string) error {
-	downloadCatalog := false
-	if info, err := os.Stat(path); err != nil || time.Now().After(info.ModTime().Add(24*time.Hour)) {
-		downloadCatalog = true
+func downloadFileWithSig(o *cmd.Options, url string, path string) error {
+	sigpath := path + ".sig"
+	sigurl := url + ".sig"
+
+	skip := true
+	info, err := os.Stat(path)
+	if err != nil {
+		o.DebugF("missing: %s\n", path)
+		skip = false
+	} else if info.ModTime().Before(o.CacheExpires) {
+		o.DebugF("expired from the cache (stale by %s): %s\n", info.ModTime().Sub(o.CacheExpires), path)
+		skip = false
 	}
-	if info, err := os.Stat(path + ".sig"); err != nil || time.Now().After(info.ModTime().Add(24*time.Hour)) {
-		downloadCatalog = true
+
+	info, err = os.Stat(sigpath)
+	if err != nil {
+		o.DebugF("missing: %s\n", sigpath)
+		skip = false
+	} else if info.ModTime().Before(o.CacheExpires) {
+		o.DebugF("expired from the cache (stale by %s): %s\n", info.ModTime().Sub(o.CacheExpires), path)
+		skip = false
 	}
-	if downloadCatalog {
-		if err := files.WithCreate(path+".sig", func(file *os.File) error {
-			return cache.HttpGet(url+".sig", file)
+
+	if skip {
+		o.DebugF("download skipped (cache expires in %s): %s\n", info.ModTime().Sub(o.CacheExpires), path)
+	} else {
+		o.DebugF("downloading: %s\n", sigurl)
+		if err := files.WithCreate(sigpath, func(file *os.File) error {
+			return cache.HttpGet(sigurl, file)
 		}); err != nil {
 			return err
 		}
+		o.DebugF("stored: %s\n", sigpath)
+
+		o.DebugF("downloading: %s\n", url)
 		if err := files.WithCreate(path, func(file *os.File) error {
 			return cache.HttpGet(url, file)
 		}); err != nil {
 			return err
 		}
+		o.DebugF("stored: %s\n", path)
 	}
 	return nil
 }

@@ -21,11 +21,15 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel() // Cancel ctx as soon as main returns
 
-	cmd := uc.New(&cmd.Options{
+	cmd, err := uc.New(&cmd.Options{
 		Context: ctx,
 	})
+	if err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
 
-	err := cmd.Execute()
+	err = cmd.Execute()
 
 	switch err {
 	case flag.ErrHelp:

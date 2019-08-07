@@ -11,7 +11,7 @@ import (
 )
 
 func GetExecutable(options *cmd.Options, command string, version string) (string, error) {
-	catalog, err := catalog2.LoadCatalogConfig()
+	catalog, err := catalog2.LoadCatalogConfig(options)
 	if err != nil {
 		return "", err
 	}
@@ -25,7 +25,7 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 		version = config.LatestVersion
 	}
 
-	platforms, err := catalog2.LoadCommandPlatforms(command, version)
+	platforms, err := catalog2.LoadCommandPlatforms(options, command, version)
 	if err != nil {
 		return "", err
 	}
@@ -41,7 +41,7 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 	request.CommandName = command
 	request.Platform = platform
 	request.Version = version
-	request.Printf = options.Printf
+	request.Printf = options.InfoF
 	return cache.Get(request)
 }
 
