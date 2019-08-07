@@ -47,7 +47,8 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 
 func GetCobraCommand(options *cmd.Options, command string, clientVersion string) (*cobra.Command, error) {
 	return &cobra.Command{
-		Use: command,
+		Use:                command,
+		DisableFlagParsing: true,
 		RunE: func(c *cobra.Command, args []string) error {
 
 			// Get the executable for that client version...
