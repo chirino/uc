@@ -18,11 +18,14 @@ For `uc` to be used globally add that directory to the `$PATH` environment setti
 Invoke `uc` with 
 
     $ uc help
-    uber client runs sub commands using clients at the version that are compatible with the cluster your logged into.
-    
     Usage:
-      main [flags]
-      main [command]
+      uc [command]
+    
+    Examples:
+    
+      uc kubectl get pods
+      uc oc new-project sandbox1
+      uc kamel run examples/dns.js
     
     Available Commands:
       help           Help about any command
@@ -34,11 +37,11 @@ Invoke `uc` with
       update-catalog Updates and GPG signs the local uc catalog (only available when built with --tags dev)
     
     Flags:
-      -h, --help                help for main
-          --kubeconfig string   path to the kubeconfig file (default "/Users/chirino/.kube/config")
-          --master string       master url
+      -h, --help                help for uc
+          --kubeconfig string   path to the Kubeconfig file (default "/Users/chirino/.kube/config")
+          --master string       Master url
     
-    Use "main [command] --help" for more information about a command.
+    Use "uc [command] --help" for more information about a command.
 
 ## How it works
 

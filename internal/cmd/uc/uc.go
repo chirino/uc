@@ -1,6 +1,7 @@
 package uc
 
 import (
+	"fmt"
 	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/cmd/utils"
 	"github.com/chirino/uc/internal/pkg/catalog"
@@ -9,12 +10,15 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
-func New(o *cmd.Options) *cobra.Command {
-	if o.Printf == nil {
-		o.Printf = cmd.StdErrPrintf
+func New(o *cmd.Options) (*cobra.Command, error) {
+	if o.InfoF == nil {
+		o.InfoF = cmd.StdErrPrintf
+		o.DebugF = cmd.NoopPrintf
 	}
+	o.CacheExpires = time.Now().Add(10000 * time.Hour)
 
 	// in case our binary gets renamed, use that in
 	// our help/usage screens.
@@ -22,8 +26,9 @@ func New(o *cmd.Options) *cobra.Command {
 	if strings.HasPrefix(use, "___") { // looks like an execution from idea.
 		use = `uc`
 	}
-
-	var cmd = &cobra.Command{
+	cacheExpires := "24h"
+	verbosity := "info"
+	var result = &cobra.Command{
 		// BashCompletionFunction: bashCompletionFunction,
 		Use:   use,
 		Short: `The Kubernetes/OpenShift uber client`,
@@ -39,15 +44,51 @@ against the cluster that you are connected to.`,
 		DisableAutoGenTag: true,
 		SilenceErrors:     true,
 	}
-	cmd.Flags().SetInterspersed(false)
-	cmd.Flags().StringVarP(&o.Kubeconfig, "kubeconfig", "", filepath.Join(user.HomeDir(), ".kube", "config"), "path to the Kubeconfig file")
-	cmd.Flags().StringVarP(&o.Master, "master", "", "", "Master url")
+	result.Flags().SetInterspersed(false)
+	result.Flags().StringVarP(&o.Kubeconfig, "kubeconfig", "", filepath.Join(user.HomeDir(), ".kube", "config"), "path to the Kubeconfig file")
+	result.Flags().StringVarP(&o.Master, "master", "", "", "Master url")
+	result.Flags().StringVarP(&cacheExpires, "cache-expires", "", "24h", "Controls when the catalog and command caches expire. One of *duration*|never|now")
+	result.Flags().StringVarP(&verbosity, "verbosity", "v", "info", "Sets the verbosity level: One of none|info|debug")
 
-	addSubcommands(o, cmd)
-	return cmd
+	result.PersistentPreRunE = func(_ *cobra.Command, args []string) error {
+		switch strings.ToLower(cacheExpires) {
+		case "never":
+			o.CacheExpires = time.Unix(0, 0) // way in the past.
+		case "now":
+			o.CacheExpires = time.Now().Add(10000 * time.Hour) // way in the future..
+		default:
+			duration, err := time.ParseDuration(cacheExpires)
+			if err != nil {
+				return fmt.Errorf("invalid flag value --cache-expires '%s': %s", cacheExpires, err)
+			}
+			o.CacheExpires = time.Now().Add(-duration)
+		}
+
+		switch strings.ToLower(verbosity) {
+		case "none":
+			o.InfoF = cmd.NoopPrintf
+			o.DebugF = cmd.NoopPrintf
+		case "info":
+			o.InfoF = cmd.StdErrPrintf
+			o.DebugF = cmd.NoopPrintf
+		case "debug":
+			o.InfoF = cmd.StdErrPrintf
+			o.DebugF = cmd.StdErrPrintf
+		default:
+			return fmt.Errorf("invalid flag value --verbosity '%s'", verbosity)
+		}
+
+		return nil
+	}
+
+	err := addSubcommands(o, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
-func addSubcommands(o *cmd.Options, parent *cobra.Command) error {
+func addSubcommands(o *cmd.Options, result *cobra.Command) error {
 
 	subcommands := map[string]*cobra.Command{}
 	for _, cmdFactory := range cmd.SubCommandFactories {
@@ -57,13 +98,14 @@ func addSubcommands(o *cmd.Options, parent *cobra.Command) error {
 		}
 		if subCommand != nil {
 			subcommands[subCommand.Use] = subCommand
-			parent.AddCommand(subCommand)
+			result.AddCommand(subCommand)
 		}
 	}
 
-	// Catalog sig might be invalid when it's being updated manually, and
-	// we need to run the update-catalog command..
-	catalog, err := catalog.LoadCatalogConfig()
+	// options are not yet parsed from the CLI flags, so this basically using
+	// --cache-expires never to avoid a doing a network round trip. After parsing this will
+	// called against when a sub command is invoked with the right --cache-expires config
+	catalog, err := catalog.LoadCatalogConfig(o)
 	if err == nil {
 		for command, c := range catalog.Commands {
 			subCommand := subcommands[command]
@@ -77,7 +119,7 @@ func addSubcommands(o *cmd.Options, parent *cobra.Command) error {
 					return err
 				}
 				subcommands[command] = subCommand
-				parent.AddCommand(subCommand)
+				result.AddCommand(subCommand)
 			}
 			if c.Short != "" {
 				subCommand.Short = c.Short
