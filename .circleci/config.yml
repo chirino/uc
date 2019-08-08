@@ -1,0 +1,119 @@
+version: 2
+
+workflows:
+  version: 2
+  build-workflow:
+    jobs:
+      - build-linux-amd64: &tag_filters
+          filters:
+            tags:
+              only: /.*/ # needed by the publish-github-release job
+      - test:
+          <<: *tag_filters
+      - build-darwin-amd64:
+          <<: *tag_filters
+      - build-windows-amd64:
+          <<: *tag_filters
+      - publish-github-release:
+          requires:
+            - build-linux-amd64
+            - build-darwin-amd64
+            - build-windows-amd64
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v.*/
+
+yaml-templates:
+  restore_go_cache: &restore_go_cache
+    restore_cache:
+      keys:
+        - go-mod-v4-{{.Environment.GOOS}}-{{.Environment.GOARCH}}-{{ checksum "go.sum" }}
+  go_mod_download: &go_mod_download
+    run:
+      name: Download Go Modules
+      command: go mod download
+  save_go_cache: &save_go_cache
+    save_cache:
+      key: go-mod-v4-{{.Environment.GOOS}}-{{.Environment.GOARCH}}-{{ checksum "go.sum" }}
+      paths:
+        - "/go/pkg/mod"
+  compile_go_executable: &compile_go_executable
+    run:
+      name: Compile Go Executable
+      command: |
+        VERSION="$CIRCLE_TAG"
+        if [ "$VERSION" == "" ] ; then
+          VERSION="ci-$CIRCLE_BUILD_NUM"
+        fi
+        echo go build -ldflags "-X github.com/chirino/uc/internal/cmd/version.Version=$VERSION" -o dist/${GOOS}-${GOARCH}/uc${EXESUFFIX}
+        go build -ldflags "-X github.com/chirino/uc/internal/cmd/version.Version=$VERSION" -o dist/${GOOS}-${GOARCH}/uc${EXESUFFIX}
+  store_dist: &store_dist
+    persist_to_workspace:
+      root: .
+      paths:
+        - dist
+jobs:
+  build-linux-amd64: &go_build
+    docker:
+      - image: circleci/golang:1.12
+    environment: &environment
+      GOOS: linux
+      GOARCH: amd64
+    steps:
+      - checkout
+      - <<: *restore_go_cache
+      - <<: *go_mod_download
+      - <<: *save_go_cache
+      - <<: *compile_go_executable
+      - <<: *store_dist
+
+  build-windows-amd64:
+    <<: *go_build
+    environment:
+      GOOS: windows
+      GOARCH: amd64
+      EXESUFFIX: ".exe"
+
+  build-darwin-amd64:
+    <<: *go_build
+    environment:
+      GOOS: darwin
+      GOARCH: amd64
+
+  test:
+    <<: *go_build
+    steps:
+      - checkout
+      - <<: *restore_go_cache
+      - <<: *go_mod_download
+      - <<: *save_go_cache
+      - run:
+          name: Run Tests
+          command: go test ./...
+
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Create a Draft Release on GitHub"
+          command: |
+            set -x
+            VERSION="$CIRCLE_TAG"
+            BASEDIR=`pwd`
+            mkdir "${BASEDIR}/archives"
+            for p in `ls dist` ; do
+              cd "$BASEDIR/dist/$p"
+              if [[ $p == windows* ]] ; then
+                zip -q "${BASEDIR}/archives/uc-${VERSION}-$p.zip" *
+              else
+                tar -zcf "${BASEDIR}/archives/uc-${VERSION}-$p.tgz" *
+              fi
+            done
+            cd ${BASEDIR}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace -prerelease -draft ${VERSION} "${BASEDIR}/archives"
