@@ -93,10 +93,3 @@ func GetCobraCommand(o *cmd.Options, command string, clientVersion string) (*cob
 		},
 	}, nil
 }
-
-func ExitOnError(err error) {
-	if err != nil {
-		fmt.Println("error:", err)
-		os.Exit(1)
-	}
-}

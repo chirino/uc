@@ -10,6 +10,7 @@ import (
 	"github.com/chirino/uc/internal/pkg/signature"
 	"github.com/chirino/uc/internal/pkg/user"
 	"golang.org/x/crypto/openpgp"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -96,21 +97,27 @@ func downloadFileWithSig(o *cmd.Options, url string, path string) error {
 	if skip {
 		fmt.Fprintf(o.DebugLog, "download skipped (cache expires in %s): %s\n", info.ModTime().Sub(o.CacheExpires), path)
 	} else {
-		fmt.Fprintln(o.DebugLog, "downloading:", sigurl)
-		if err := files.WithCreate(sigpath, func(file *os.File) error {
-			return cache.HttpGet(sigurl, file)
-		}); err != nil {
+		if err := download(o, sigurl, sigpath); err != nil {
 			return err
 		}
-		fmt.Fprintln(o.DebugLog, "stored:", sigpath)
-
-		fmt.Fprintln(o.DebugLog, "downloading:", url)
-		if err := files.WithCreate(path, func(file *os.File) error {
-			return cache.HttpGet(url, file)
-		}); err != nil {
+		if err := download(o, url, path); err != nil {
 			return err
 		}
-		fmt.Fprintln(o.DebugLog, "stored:", path)
 	}
+	return nil
+}
+
+func download(o *cmd.Options, url string, toFileName string) error {
+	fmt.Fprintln(o.InfoLog, "downloading:", url)
+	err := cache.WithHttpGetReader(url, func(src io.Reader) error {
+		return files.WithCreateThenReplace(toFileName, 0644, func(dst *os.File) error {
+			_, err := io.Copy(dst, src)
+			return err
+		})
+	})
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(o.InfoLog, "wrote:", toFileName)
 	return nil
 }

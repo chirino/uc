@@ -1,9 +1,9 @@
 package cache
 
 import (
-	"compress/gzip"
 	"fmt"
 	"github.com/chirino/uc/internal/pkg/archive"
+	"github.com/chirino/uc/internal/pkg/files"
 	"github.com/chirino/uc/internal/pkg/signature"
 	"github.com/chirino/uc/internal/pkg/user"
 	"golang.org/x/crypto/openpgp"
@@ -33,12 +33,12 @@ type Request struct {
 }
 
 func Get(r *Request) (string, error) {
-	dir, err := CacheCommandPath()
+	commandsDir, err := CacheCommandPath()
 	if err != nil {
 		return "", err
 	}
 
-	targetExe := filepath.Join(dir, r.CommandName, r.Version, r.Platform, ExeSuffix(r.CommandName))
+	targetExe := filepath.Join(commandsDir, r.CommandName, r.Version, r.Platform, ExeSuffix(r.CommandName))
 
 	if !r.ForceDownload {
 		exists, err := Exists(targetExe)
@@ -54,43 +54,54 @@ func Get(r *Request) (string, error) {
 		}
 	}
 
-	tempFile, err := DownloadToTempFile(r)
-	if err != nil {
-		return "", err
-	}
-
-	// Delete the downloaded file...
-	defer os.Remove(tempFile)
-
-	dir = filepath.Dir(targetExe)
-	err = os.MkdirAll(dir, 0755)
-	if err != nil {
-		return "", err
-	}
-
+	fmt.Fprintln(r.InfoLog, "downloading:", r.URL)
 	if r.ExtractZip != "" {
-		err = archive.UnzipCommand(tempFile, r.ExtractZip, targetExe)
+		// we can stream right to the target file..
+		err = WithHttpGetReader(r.URL, func(src io.Reader) error {
+			return files.WithCreateThenReplace(targetExe, 0775, func(dst *os.File) error {
+				_, err := io.Copy(dst, src)
+				return err
+			})
+		}, archive.ZipReaderMiddleware(r.ExtractZip))
 		if err != nil {
 			return "", err
 		}
 	} else if r.ExtractTgz != "" {
-		err = archive.UntgzCommand(tempFile, r.ExtractTgz, targetExe)
+		// we can stream right to the target file..
+		err = WithHttpGetReader(r.URL, func(src io.Reader) error {
+			return files.WithCreateThenReplace(targetExe, 0775, func(dst *os.File) error {
+				_, err := io.Copy(dst, src)
+				return err
+			})
+		}, archive.GzipReaderMiddleware, archive.TarReaderMiddleware(r.ExtractTgz))
 		if err != nil {
 			return "", err
 		}
+
 	} else if r.Uncompress == "gz" {
-		_, err := CopyExectuable(tempFile, targetExe, func(r io.Reader) (closer io.ReadCloser, e error) {
-			return gzip.NewReader(r)
-		})
+		// we can stream right to the target file..
+		err = WithHttpGetReader(r.URL, func(src io.Reader) error {
+			return files.WithCreateThenReplace(targetExe, 0775, func(dst *os.File) error {
+				_, err := io.Copy(dst, src)
+				return err
+			})
+		}, archive.GzipReaderMiddleware)
 		if err != nil {
 			return "", err
 		}
 	} else {
-		_, err := CopyExectuable(tempFile, targetExe)
+		// we can stream right to the target file..
+		err = WithHttpGetReader(r.URL, func(src io.Reader) error {
+			return files.WithCreateThenReplace(targetExe, 0775, func(dst *os.File) error {
+				_, err := io.Copy(dst, src)
+				return err
+			})
+		})
 		if err != nil {
 			return "", err
 		}
 	}
+	fmt.Fprintln(r.InfoLog, "wrote:", targetExe)
 
 	err = Verify(r, targetExe)
 	if err != nil {
@@ -122,7 +133,7 @@ func DownloadToTempFile(r *Request) (string, error) {
 		os.Remove(to.Name())
 		return "", err
 	}
-	fmt.Fprintln(r.InfoLog, "done:", r.URL)
+	fmt.Fprintln(r.InfoLog, "wrote:", r.URL)
 	return to.Name(), nil
 }
 
@@ -137,6 +148,13 @@ func Exists(filename string) (bool, error) {
 }
 
 func HttpGet(url string, to io.Writer) error {
+	return WithHttpGetReader(url, func(reader io.Reader) error {
+		_, err := io.Copy(to, reader)
+		return err
+	})
+}
+
+func WithHttpGetReader(url string, action func(io.Reader) error, filters ...func(r io.Reader) (io.Reader, error)) error {
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -145,9 +163,7 @@ func HttpGet(url string, to io.Writer) error {
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return fmt.Errorf("get '%s' status code: %d", url, resp.StatusCode)
 	}
-	// Write the body to file
-	_, err = io.Copy(to, resp.Body)
-	return nil
+	return files.WithReader(resp.Body, action, filters...)
 }
 
 func Verify(r *Request, file string) error {
@@ -188,29 +204,4 @@ func ExeSuffix(s string) string {
 		return s + ".exe"
 	}
 	return s
-}
-
-func CopyExectuable(from string, to string, filters ...func(r io.Reader) (io.ReadCloser, error)) (int64, error) {
-	source, err := os.Open(from)
-	if err != nil {
-		return 0, err
-	}
-	defer source.Close()
-
-	sourceReader := io.ReadCloser(source)
-	for _, f := range filters {
-		sourceReader, err = f(sourceReader)
-		if err != nil {
-			return 0, err
-		}
-		defer sourceReader.Close()
-	}
-
-	destination, err := os.OpenFile(to, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
-	if err != nil {
-		return 0, err
-	}
-	defer destination.Close()
-	nBytes, err := io.Copy(destination, sourceReader)
-	return nBytes, err
 }
