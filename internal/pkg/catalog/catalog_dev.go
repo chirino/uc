@@ -23,7 +23,7 @@ func LoadCatalogIndex(o *cmd.Options) (*cmd.CatalogIndex, error) {
 }
 
 func LoadCommandPlatforms(o *cmd.Options, keyring openpgp.EntityList, catalogBaseURL string, command string, version string) (map[string]*cache.Request, error) {
-	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version, "platforms.yaml")
+	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version+".yaml")
 	result := map[string]*cache.Request{}
 	err := load(o, keyring, path, &result)
 	return result, err

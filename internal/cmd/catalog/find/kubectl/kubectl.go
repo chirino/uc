@@ -28,7 +28,7 @@ func New() *cobra.Command {
 		},
 	}
 	command.Flags().BoolVarP(&forceDownload, "force", "", false, "force download all the commands")
-	command.Flags().IntVarP(&startingMinor, "force", "", 15, "Kubernetes minor to start searching at.")
+	command.Flags().IntVarP(&startingMinor, "start-at-minor", "", 15, "the Kubernetes minor version to start searching at.")
 	return command
 }
 
@@ -41,7 +41,7 @@ minor:
 			version := fmt.Sprintf("1.%d.%d", minor, micro)
 
 			platforms := map[string]*cache.Request{}
-			fn := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version, "platforms.yaml")
+			fn := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version+".yaml")
 			_, err := os.Stat(fn)
 			if err == nil {
 				platforms := map[string]*cache.Request{}
