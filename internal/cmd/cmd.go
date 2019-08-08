@@ -21,8 +21,7 @@ type Options struct {
 }
 
 type CatalogIndex struct {
-	Update   string                     `json:"update,omitempty"`
-	Commands map[string]*CatalogCommand `json:"commands,omitempty"`
+	Commands        map[string]*CatalogCommand `json:"commands,omitempty"`
 }
 
 type CatalogCommand struct {

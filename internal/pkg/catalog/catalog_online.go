@@ -38,9 +38,9 @@ func LoadCommandPlatforms(o *cmd.Options, keyring openpgp.EntityList, catalogBas
 		return nil, fmt.Errorf("Cannot determine the user home directory")
 	}
 
-	path := filepath.Join(home, ".uc", "cache", "catalog", command, version, "platforms.yaml")
+	path := filepath.Join(home, ".uc", "cache", "catalog", command, version+ ".yaml")
 	result := map[string]*cache.Request{}
-	url := fmt.Sprintf(catalogBaseURL+"/%s/%s/platforms.yaml", command, version)
+	url := fmt.Sprintf(catalogBaseURL+"/%s/%s.yaml", command, version)
 	err := downloadYamlWithSig(o, keyring, url, path, &result)
 	return result, err
 }

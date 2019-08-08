@@ -13,8 +13,8 @@ import (
     "os"
     "path/filepath"
     "sigs.k8s.io/yaml"
+    "strings"
 )
-
 
 func LoadCatalogIndex() (string, *cmd.CatalogIndex, error) {
     fmt.Println("loading catalog")
@@ -149,19 +149,18 @@ func ForCommandPlatforms(command string, action func(version string, file string
     }
 
     for _, f := range files {
-        version := f.Name()
-        fn := filepath.Join(commandDir, version, "platforms.yaml")
-        _, err := os.Stat(fn)
-        if err != nil {
-            continue
+        if strings.HasSuffix(f.Name(), ".yaml") {
+            platforms := map[string]*cache.Request{}
+            fileName := filepath.Join(commandDir, f.Name())
+            err = LoadYaml(fileName, &platforms)
+            if err != nil {
+                return err
+            }
+            err = action(strings.TrimSuffix(f.Name(), ".yaml"), fileName, platforms)
+            if err != nil {
+                return err
+            }
         }
-
-        platforms := map[string]*cache.Request{}
-        err = LoadYaml(fn, &platforms)
-        if err != nil {
-            return err
-        }
-        action(version, fn, platforms)
     }
     return nil
 }
