@@ -7,7 +7,6 @@ import (
     "github.com/chirino/uc/internal/cmd"
     "github.com/chirino/uc/internal/pkg/cache"
     "github.com/chirino/uc/internal/pkg/catalog"
-    "github.com/chirino/uc/internal/pkg/dev"
     "github.com/chirino/uc/internal/pkg/signature"
     "io/ioutil"
     "os"
@@ -18,8 +17,7 @@ import (
 
 func LoadCatalogIndex() (string, *cmd.CatalogIndex, error) {
     fmt.Println("loading catalog")
-    docsDir := filepath.Join(dev.GO_MOD_DIRECTORY, "docs")
-    catalogFileName := filepath.Join(docsDir, "catalog", "index.yaml")
+    catalogFileName := catalog.CatalogPathJoin("index.yaml")
     cat := &cmd.CatalogIndex{}
     err := LoadYaml(catalogFileName, cat)
     if err != nil {
@@ -141,8 +139,7 @@ func gpgSign(path string) (string, error) {
 }
 
 func ForCommandPlatforms(command string, action func(version string, file string, platforms map[string]*cache.Request) error) error {
-    docsDir := filepath.Join(dev.GO_MOD_DIRECTORY, "docs")
-    commandDir := filepath.Join(docsDir, "catalog", command)
+    commandDir := catalog.CatalogPathJoin(command)
     files, err := ioutil.ReadDir(commandDir)
     if err != nil {
         return err

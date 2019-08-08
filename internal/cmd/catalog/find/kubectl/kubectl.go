@@ -5,12 +5,11 @@ import (
 	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/cmd/catalog/pkg"
 	"github.com/chirino/uc/internal/pkg/cache"
-	"github.com/chirino/uc/internal/pkg/dev"
+	"github.com/chirino/uc/internal/pkg/catalog"
 	"github.com/chirino/uc/internal/pkg/utils"
 	"github.com/spf13/cobra"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -41,7 +40,7 @@ minor:
 			version := fmt.Sprintf("1.%d.%d", minor, micro)
 
 			platforms := map[string]*cache.Request{}
-			fn := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version+".yaml")
+			fn := catalog.CatalogPathJoin(command, version+".yaml")
 			_, err := os.Stat(fn)
 			if err == nil {
 				platforms := map[string]*cache.Request{}
