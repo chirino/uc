@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-var DefaultCatalogBaseURL = "https://chirino.github.io/uc/catalog"
+var DefaultCatalogBaseURL = "https://chirino.github.io/uc/catalog/v1"
 
 func CheckSigatureAgainstSigFile(keyring openpgp.EntityList, path string) error {
 	sigpath := path + ".sig"

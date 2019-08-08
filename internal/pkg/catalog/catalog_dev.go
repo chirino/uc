@@ -15,15 +15,19 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+func CatalogPathJoin(elem ...string) string {
+	return filepath.Join(append([]string{dev.GO_MOD_DIRECTORY, "docs", "catalog", "v1"}, elem...)...)
+}
+
 func LoadCatalogIndex(o *cmd.Options) (*cmd.CatalogIndex, error) {
-	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", "index.yaml")
+	path := CatalogPathJoin("index.yaml")
 	result := &cmd.CatalogIndex{}
 	err := load(o, signature.DefaultPublicKeyring, path, result)
 	return result, err
 }
 
 func LoadCommandPlatforms(o *cmd.Options, keyring openpgp.EntityList, catalogBaseURL string, command string, version string) (map[string]*cache.Request, error) {
-	path := filepath.Join(dev.GO_MOD_DIRECTORY, "docs", "catalog", command, version+".yaml")
+	path := CatalogPathJoin(command, version+".yaml")
 	result := map[string]*cache.Request{}
 	err := load(o, keyring, path, &result)
 	return result, err
