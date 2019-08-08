@@ -1,6 +1,7 @@
 package uc
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/cmd/utils"
@@ -15,11 +16,12 @@ import (
 )
 
 func New(o *cmd.Options) (*cobra.Command, error) {
-	if o.InfoLog == nil {
-		o.InfoLog = os.Stderr
-		o.DebugLog = ioutil.Discard
-	}
-	o.CacheExpires = time.Now().Add(10000 * time.Hour)
+
+	infoTemp := new(bytes.Buffer)
+	debugTemp := new(bytes.Buffer)
+	o.InfoLog = infoTemp
+	o.DebugLog = debugTemp
+	o.CacheExpires = time.Now().Add(-10000 * time.Hour)
 
 	// in case our binary gets renamed, use that in
 	// our help/usage screens.
@@ -78,7 +80,9 @@ against the cluster that you are connected to.`,
 		default:
 			return fmt.Errorf("invalid flag value --verbosity '%s'", verbosity)
 		}
-
+		i := infoTemp.Bytes()
+		o.InfoLog.Write(i)
+		o.DebugLog.Write(debugTemp.Bytes())
 		return nil
 	}
 
