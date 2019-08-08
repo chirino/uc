@@ -11,24 +11,28 @@ import (
 func New() *cobra.Command {
     var forceDownload = false
     command := &cobra.Command{
-        Use:   "sign",
+        Use:   "sign [command(s)]",
         Short: "signs the local development uc catalog in the docs directory",
         RunE: func(c *cobra.Command, args []string) error {
-            return run(forceDownload)
+            return run(forceDownload, args)
         },
     }
     command.Flags().BoolVarP(&forceDownload, "force", "", false, "force download all the commands")
     return command
 }
 
-func run(forceDownload bool) error {
+func run(forceDownload bool, commands []string) error {
 
-    catalogFileName, index, err := pkg.LoadCatalogIndex()
+    catalogFileName, _, err := pkg.LoadCatalogIndex()
+    if err != nil {
+        return err
+    }
+    err = pkg.SignIfNeeded(catalogFileName)
     if err != nil {
         return err
     }
 
-    for command, _ := range index.Commands {
+    for _, command := range commands {
         err := pkg.ForCommandPlatforms(command, func(version string, fn string, platforms map[string]*cache.Request) error {
             for platform, request := range platforms {
                 request.ForceDownload = forceDownload
@@ -58,11 +62,5 @@ func run(forceDownload bool) error {
 
     }
 
-    err = pkg.SignIfNeeded(catalogFileName)
-    if err != nil {
-        return err
-    }
-
     return nil
 }
-

@@ -6,14 +6,10 @@ It automatically downloads and updates Kubernets CLI clients so your using the t
 best works with cluster your connected to.  You'll never need to download or update your kubernets 
 related CLI client tools again.
 
-## Installation
+## Installing
 
-requires a [supported release of Go](https://golang.org/doc/devel/release.html#policy).
-
-    go get -u github.com/chirino/uc
-
-To find out where `uc` was installed you can run `go list -f {{.Target}} github.com/chirino/uc`. 
-For `uc` to be used globally add that directory to the `$PATH` environment setting.
+Browse the [releases page](https://github.com/chirino/uc/releases), extract the appropriate executable
+for your platform, and install it to your `PATH`.
 
 # Usage
 
@@ -65,4 +61,10 @@ The version of the sub command executable use can vary based on the cluster your
 the version for `kubectl` selected will match match the Kubernetes server version your connected against.  For 
 other sub commands which we do not have a good way of selecting the best version based on the cluster
 state, we will used the latest version released.
+
+## Building From Source
+
+Requires [Go 1.12+](https://golang.org/dl/).  To fetch the latest sources and install into your system:
+
+    go get -u github.com/chirino/uc
 

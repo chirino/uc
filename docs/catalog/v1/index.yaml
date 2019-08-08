@@ -1,6 +1,6 @@
 commands:
-#  uc:
-#    latest-version: 0.0.1
+  uc:
+    latest-version: 0.0.1
   kamel:
     latest-version: 1.0.0-M1
     short-description: Manage your Apache Camel K integrations
