@@ -30,7 +30,7 @@ var (
 var Default = All
 
 func All() {
-    d(Build.Dev, Build.Uc, Test)
+    d(Build, Test)
 }
 
 type Platform struct {
@@ -38,34 +38,24 @@ type Platform struct {
     GOARCH string
 }
 
-func Release() {
+func Build() {
     platforms := []Platform{
         Platform{"linux", "amd64"},
         Platform{"linux", "arm64"},
         Platform{"windows", "amd64"},
         Platform{"darwin", "amd64"},
     }
-    for _, value := range platforms {
-        buildUc(value)
+    for _, p := range platforms {
+        cli.
+            Env(map[string]string{
+                "GOOS":   p.GOOS,
+                "GOARCH": p.GOARCH,
+            }).
+            Line(fmt.Sprintf(`go build -o dist/%s-%s/uc%s`, p.GOOS, p.GOARCH, exeSuffix(p.GOOS))).
+            MustZeroExit()
     }
-}
-
-type Build mg.Namespace
-
-func (Build) Uc() {
-    platform := Platform{runtime.GOOS, runtime.GOARCH}
-    buildUc(platform)
-}
-
-func (Build) Dev() {
-    buildUcDev()
-}
-
-type Catalog mg.Namespace
-func (Catalog) Sign() {
-    d(Build.Dev)
     cli.
-        Line(fmt.Sprintf(`./build/uc-dev%s catalog sign`, exeSuffix(runtime.GOOS))).
+        Line(fmt.Sprintf(`go build --tags dev -o build/uc-dev%s`, exeSuffix(runtime.GOOS))).
         MustZeroExit()
 }
 
@@ -73,19 +63,11 @@ func Test() {
     cli.Line(`go test ./... `).MustZeroExit()
 }
 
-func buildUc(p Platform) {
+type Catalog mg.Namespace
+func (Catalog) Sign() {
+    d(Build)
     cli.
-        Env(map[string]string{
-            "GOOS":   p.GOOS,
-            "GOARCH": p.GOARCH,
-        }).
-        Line(fmt.Sprintf(`go build -o dist/%s-%s/uc%s`, p.GOOS, p.GOARCH, exeSuffix(p.GOOS))).
-        MustZeroExit()
-}
-
-func buildUcDev() {
-    cli.
-        Line(fmt.Sprintf(`go build --tags dev -o build/uc-dev%s`, exeSuffix(runtime.GOOS))).
+        Line(fmt.Sprintf(`./build/uc-dev%s catalog sign`, exeSuffix(runtime.GOOS))).
         MustZeroExit()
 }
 
