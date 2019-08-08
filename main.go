@@ -8,7 +8,7 @@ import (
 	_ "github.com/chirino/uc/internal/cmd/kamel"
 	_ "github.com/chirino/uc/internal/cmd/kubectl"
 	"github.com/chirino/uc/internal/cmd/uc"
-	"github.com/chirino/uc/internal/cmd/utils"
+	"github.com/chirino/uc/internal/pkg/utils"
 	"github.com/spf13/pflag"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"math/rand"

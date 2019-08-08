@@ -6,9 +6,11 @@ require (
 	github.com/chirino/hawtgo v0.0.0-20190807190259-475db1a4c1c2
 	github.com/googleapis/gnostic v0.3.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
+	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
 	github.com/magefile/mage v1.8.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
+	github.com/stretchr/testify v1.3.0
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
