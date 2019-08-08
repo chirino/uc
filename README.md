@@ -1,5 +1,7 @@
 # `uc` is an uber Kubernetes update client.
 
+[![CircleCI](https://circleci.com/gh/chirino/uc.svg?style=svg)](https://circleci.com/gh/chirino/uc)
+
 It automatically downloads and updates Kubernets CLI clients so your using the the version that
 best works with cluster your connected to.  You'll never need to download or update your kubernets 
 related CLI client tools again.
