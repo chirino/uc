@@ -1,13 +1,12 @@
 package user
 
 import (
-    "os"
+	"os"
 )
 
 func HomeDir() string {
-    if home := os.Getenv("HOME"); home != "" {
-        return home
-    }
-    return os.Getenv("USERPROFILE")
+	if home := os.Getenv("HOME"); home != "" {
+		return home
+	}
+	return os.Getenv("USERPROFILE")
 }
-
