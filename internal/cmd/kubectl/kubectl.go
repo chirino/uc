@@ -9,18 +9,20 @@ import (
 )
 
 func init() {
-	cmd.SubCommandFactories = append(cmd.SubCommandFactories, NewCmd)
+	cmd.SubCommandFactories = append(cmd.SubCommandFactories, New)
 }
 
-func NewCmd(options *cmd.Options) (*cobra.Command, error) {
-	clientVersion := "latest"
-	api, err := options.NewApiClient()
-	if err == nil {
-		return nil, err
-	}
-	info, err := api.ServerVersion()
-	if err == nil {
-		clientVersion = strings.Split(strings.TrimPrefix(info.GitVersion, "v"), "-")[0]
-	}
-	return utils.GetCobraCommand(options, "kubectl", clientVersion)
+func New(o *cmd.Options) *cobra.Command {
+
+	return utils.GetCobraCommand(o, "kamel", func() (version string) {
+		api, err := o.NewApiClient()
+		if err != nil {
+			return "latest"
+		}
+		info, err := api.ServerVersion()
+		if err != nil {
+			return "latest"
+		}
+		return strings.Split(strings.TrimPrefix(info.GitVersion, "v"), "-")[0]
+	})
 }

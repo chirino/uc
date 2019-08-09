@@ -25,26 +25,33 @@ Invoke `uc` with
     
     Examples:
     
+      # Use the kubectl version that matches the kubernetes server
       uc kubectl get pods
-      uc oc new-project sandbox1
-      uc kamel run examples/dns.js
+      # Use the 3.10 version of the oc client
+      uc --ver 3.10.0 oc new-project sandbox1
+      # Use the latest version of Apache Camel-K
+      uc kamel install
     
     Available Commands:
+      catalog     Tools to manage the uc catalog
       help        Help about any command
       kamel       Manage your Apache Camel K integrations
       kn          Manage your Knative building blocks
       kubectl     Controls the Kubernetes cluster manager
       oc          OpenShift Client
       odo         Developer-focused CLI for OpenShift
+      version     Show the version information
     
     Flags:
           --cache-expires string   Controls when the catalog and command caches expire. One of *duration*|never|now (default "24h")
       -h, --help                   help for uc
-          --kubeconfig string      path to the Kubeconfig file (default "/Users/chirino/.kube/config")
-          --master string          Master url
-      -v, --verbosity string       Sets the verbosity level: One of none|info|debug (default "info")
+          --kubeconfig string      Path to the kubeconfig file (default "/Users/chirino/.kube/config")
+      -l, --log-level string       Sets the log level. One of none|info|debug (default "info")
+          --master string          URL of the api server
+      -v, --ver string             Selects the version of the command to run
     
     Use "uc [command] --help" for more information about a command.
+
 
 ## How it works
 

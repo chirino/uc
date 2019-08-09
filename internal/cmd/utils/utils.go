@@ -14,6 +14,39 @@ import (
 	"strings"
 )
 
+func GetCobraCommand(o *cmd.Options, command string, getClientVersion func() (version string)) *cobra.Command {
+	return &cobra.Command{
+		Use:                command,
+		DisableFlagParsing: true,
+		Run: func(c *cobra.Command, args []string) {
+
+			version := o.CommandVersion
+			if version == "" {
+				if getClientVersion != nil {
+					version = getClientVersion()
+				} else {
+					version = "latest"
+				}
+			}
+
+			// Get the executable for that client version...
+			executable, err := GetExecutable(o, command, version)
+			if err != nil {
+				fmt.Fprintln(o.InfoLog, "could not get a suitable command executable:", err)
+				os.Exit(2)
+			}
+
+			// call it pass along any args....
+			err = sh.New().CommandLog(o.DebugLog).CommandLogPrefix("running > ").LineArgs(append([]string{executable}, args...)...).Exec()
+			if err != nil {
+				fmt.Fprintln(o.InfoLog, "error:", err)
+				os.Exit(3)
+			}
+
+		},
+	}
+}
+
 func GetExecutable(options *cmd.Options, command string, version string) (string, error) {
 	index, err := catalog.LoadCatalogIndex(options)
 	if err != nil {
@@ -68,28 +101,4 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 	request.InfoLog = options.InfoLog
 	request.DebugLog = options.DebugLog
 	return cache.Get(request)
-}
-
-func GetCobraCommand(o *cmd.Options, command string, clientVersion string) (*cobra.Command, error) {
-	return &cobra.Command{
-		Use:                command,
-		DisableFlagParsing: true,
-		Run: func(c *cobra.Command, args []string) {
-
-			// Get the executable for that client version...
-			executable, err := GetExecutable(o, command, clientVersion)
-			if err != nil {
-				fmt.Fprintln(o.InfoLog, "could not get a suitable command executable:", err)
-				os.Exit(2)
-			}
-
-			// call it pass along any args....
-			err = sh.New().CommandLog(o.DebugLog).CommandLogPrefix("running > ").LineArgs(append([]string{executable}, args...)...).Exec()
-			if err != nil {
-				fmt.Fprintln(o.InfoLog, "error:", err)
-				os.Exit(3)
-			}
-
-		},
-	}, nil
 }

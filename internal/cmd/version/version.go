@@ -13,12 +13,12 @@ func init() {
 
 var Version = "unknown"
 
-func New(options *cmd.Options) (*cobra.Command, error) {
+func New(options *cmd.Options) *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Show the version information",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(Version)
 		},
-	}, nil
+	}
 }

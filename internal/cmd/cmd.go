@@ -11,17 +11,18 @@ import (
 )
 
 type Options struct {
-	Context      context.Context
-	Kubeconfig   string
-	Master       string
-	CacheExpires time.Time
-	InfoLog      io.Writer
-	DebugLog     io.Writer
-	CatalogIndex *CatalogIndex
+	Context        context.Context
+	Kubeconfig     string
+	Master         string
+	CacheExpires   time.Time
+	InfoLog        io.Writer
+	DebugLog       io.Writer
+	CatalogIndex   *CatalogIndex
+	CommandVersion string
 }
 
 type CatalogIndex struct {
-	Commands        map[string]*CatalogCommand `json:"commands,omitempty"`
+	Commands map[string]*CatalogCommand `json:"commands,omitempty"`
 }
 
 type CatalogCommand struct {
@@ -32,7 +33,7 @@ type CatalogCommand struct {
 	CatalogPublicKey string `json:"catalog-public-key,omitempty"`
 }
 
-type SubCommandFactory func(options *Options) (*cobra.Command, error)
+type SubCommandFactory func(options *Options) *cobra.Command
 
 var SubCommandFactories = []SubCommandFactory{}
 

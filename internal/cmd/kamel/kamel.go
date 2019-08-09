@@ -8,13 +8,14 @@ import (
 )
 
 func init() {
-	cmd.SubCommandFactories = append(cmd.SubCommandFactories, NewCmd)
+	cmd.SubCommandFactories = append(cmd.SubCommandFactories, New)
 }
 
-func NewCmd(options *cmd.Options) (*cobra.Command, error) {
-	// Todo: figure out how to pick the best client version
-	//       for the server we are connected against.  We could look at the
-	//       CRD versions installed to pick the best client version.
-	clientVersion := "latest"
-	return utils.GetCobraCommand(options, "kamel", clientVersion)
+func New(o *cmd.Options) *cobra.Command {
+	return utils.GetCobraCommand(o, "kamel", func() (version string) {
+		// Todo: figure out how to pick the best client version
+		//       for the server we are connected against.  We could look at the
+		//       CRD versions installed to pick the best client version.
+		return "latest"
+	})
 }
