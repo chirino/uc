@@ -5,6 +5,7 @@ package sign
 import (
     "github.com/chirino/uc/internal/cmd/catalog/pkg"
     "github.com/chirino/uc/internal/pkg/cache"
+    "github.com/chirino/uc/internal/pkg/utils"
     "github.com/spf13/cobra"
 )
 
@@ -13,8 +14,8 @@ func New() *cobra.Command {
     command := &cobra.Command{
         Use:   "sign [command(s)]",
         Short: "signs the local development uc catalog in the docs directory",
-        RunE: func(c *cobra.Command, args []string) error {
-            return run(forceDownload, args)
+        Run: func(c *cobra.Command, args []string) {
+            utils.ExitOnError(run(forceDownload, args))
         },
     }
     command.Flags().BoolVarP(&forceDownload, "force", "", false, "force download all the commands")

@@ -87,24 +87,22 @@ against the cluster that you are connected to.`,
         o.InfoLog.Write(i)
         o.DebugLog.Write(debugTemp.Bytes())
 
-        // Now the --cache-expires is processed, get the catalog again, since it may download again due
-        // to it getting stale.
+        // Now that the --cache-expires is processed, get the catalog again, since it may download a fresh copy due
+        // to cache expiration..  Use it to check to see if we need a self update.
         catalog, err := catalog.LoadCatalogIndex(o)
         if err == nil {
             // If the installed uc version is old, get an updated one, and then re-run the CLI against the new version.
             uc := catalog.Commands["uc"]
-            if uc != nil && uc.LatestVersion != "" && version.Version != "latest" && uc.LatestVersion != uc.LatestVersion {
-                fmt.Fprintln(o.InfoLog, "don't know how get the command executable:", err)
+            if uc != nil && uc.LatestVersion != "" && version.Version != "latest" && uc.LatestVersion != version.Version {
                 executable, err := utils.GetExecutable(o, "uc", uc.LatestVersion)
                 if err != nil {
-                    fmt.Fprintln(o.InfoLog, "don't know how get the command executable:", err)
-                    os.Exit(2)
-                }
-
-                err = sh.New().CommandLog(o.DebugLog).CommandLogPrefix("running > ").LineArgs(append([]string{executable}, os.Args[1:]...)...).Exec()
-                if err != nil {
-                    fmt.Fprintln(o.InfoLog, "error:", err)
-                    os.Exit(3)
+                    fmt.Fprintln(o.InfoLog, "self update failed: don't know how get the command executable: ", err)
+                } else {
+                    err = sh.New().CommandLog(o.DebugLog).CommandLogPrefix("running > ").LineArgs(append([]string{executable}, os.Args[1:]...)...).Exec()
+                    if err != nil {
+                        fmt.Fprintln(o.InfoLog, "error:", err)
+                        os.Exit(3)
+                    }
                 }
             }
         }
