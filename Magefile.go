@@ -67,6 +67,10 @@ func Format() {
 	cli.Line(`go fmt ./... `).MustZeroExit()
 }
 
+func Changelog() {
+	cli.Line(`go run github.com/git-chglog/git-chglog/cmd/git-chglog`).MustZeroExit()
+}
+
 type Catalog mg.Namespace
 
 func (Catalog) Sign() {
