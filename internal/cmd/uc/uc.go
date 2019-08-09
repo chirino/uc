@@ -121,12 +121,13 @@ against the cluster that you are connected to.`,
 	return result, nil
 }
 
-func addSubcommands(o *cmd.Options, result *cobra.Command) error {
+func addSubcommands(o *cmd.Options, parent *cobra.Command) error {
 
 	subcommands := map[string]*cobra.Command{}
 	for _, cmdFactory := range cmd.SubCommandFactories {
 		subCommand := cmdFactory(o)
 		subcommands[subCommand.Use] = subCommand
+		parent.AddCommand(subCommand)
 	}
 
 	// options are not yet parsed from the CLI flags, so this basically using
@@ -149,7 +150,7 @@ func addSubcommands(o *cmd.Options, result *cobra.Command) error {
 				// here we setup a command that only exists in the catalog
 				subCommand = utils.GetCobraCommand(o, command, nil)
 				subcommands[command] = subCommand
-				result.AddCommand(subCommand)
+				parent.AddCommand(subCommand)
 			}
 			if c.Short != "" {
 				subCommand.Short = c.Short
