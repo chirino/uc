@@ -37,8 +37,7 @@ yaml-templates:
     persist_to_workspace:
       root: .
       paths:
-        - di
-        - st
+        - dist
 workflows:
   version: 2
   build-workflow:
