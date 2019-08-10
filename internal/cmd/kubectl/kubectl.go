@@ -5,7 +5,7 @@ import (
 	"github.com/chirino/uc/internal/cmd"
 	"github.com/chirino/uc/internal/cmd/utils"
 	"github.com/spf13/cobra"
-	"strings"
+	"regexp"
 )
 
 func init() {
@@ -14,7 +14,7 @@ func init() {
 
 func New(o *cmd.Options) *cobra.Command {
 
-	return utils.GetCobraCommand(o, "kamel", func() (version string) {
+	return utils.GetCobraCommand(o, "kubectl", func() (version string) {
 		api, err := o.NewApiClient()
 		if err != nil {
 			return "latest"
@@ -23,6 +23,12 @@ func New(o *cmd.Options) *cobra.Command {
 		if err != nil {
 			return "latest"
 		}
-		return strings.Split(strings.TrimPrefix(info.GitVersion, "v"), "-")[0]
+
+		re := regexp.MustCompile(`^(v\d+.\d+.\d+)`)
+		if matches := re.FindAllStringSubmatch(info.GitVersion, -1); len(matches) > 0 {
+			result := matches[0][1]
+			return result
+		}
+		return "latest"
 	})
 }

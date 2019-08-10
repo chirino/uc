@@ -8,6 +8,7 @@ import (
 	"github.com/chirino/uc/internal/cmd/utils"
 	"github.com/chirino/uc/internal/cmd/version"
 	"github.com/chirino/uc/internal/pkg/catalog"
+	"github.com/chirino/uc/internal/pkg/signature"
 	"github.com/chirino/uc/internal/pkg/user"
 	"github.com/spf13/cobra"
 	"io/ioutil"
@@ -93,12 +94,10 @@ against the cluster that you are connected to.`,
 
 		// Now that the --cache-expires is processed, get the catalog again, since it may download a fresh copy due
 		// to cache expiration..  Use it to check to see if we need a self update.
-		catalog, err := catalog.LoadCatalogIndex(o)
+		ucInfo, err := catalog.LoadCommandIndex(o, signature.DefaultPublicKeyring, catalog.DefaultCatalogBaseURL, "uc")
 		if err == nil {
-			// If the installed uc version is old, get an updated one, and then re-run the CLI against the new version.
-			uc := catalog.Commands["uc"]
-			if uc != nil && uc.LatestVersion != "" && version.Version != "latest" && uc.LatestVersion != version.Version {
-				executable, err := utils.GetExecutable(o, "uc", uc.LatestVersion)
+			if ucInfo.Latest != "" && version.Version != "latest" && ucInfo.Latest != version.Version {
+				executable, err := utils.GetExecutable(o, "uc", ucInfo.Latest)
 				if err != nil {
 					fmt.Fprintln(o.InfoLog, "self update failed: don't know how get the command executable: ", err)
 				} else {

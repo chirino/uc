@@ -6,6 +6,7 @@ import (
     "github.com/chirino/uc/internal/cmd"
     "github.com/chirino/uc/internal/cmd/catalog/pkg"
     "github.com/chirino/uc/internal/pkg/cache"
+    "github.com/chirino/uc/internal/pkg/catalog"
     "github.com/chirino/uc/internal/pkg/utils"
     "github.com/spf13/cobra"
 )
@@ -35,6 +36,13 @@ func run(forceDownload bool, commands []string) error {
     }
 
     for _, command := range commands {
+
+        commandIndexFile := catalog.CatalogPathJoin(command+".yaml")
+        err = pkg.SignIfNeeded(commandIndexFile)
+        if err != nil {
+            return err
+        }
+
         err := pkg.ForCommandPlatforms(command, func(version string, fn string, platforms map[string]*cache.Request) error {
             for platform, request := range platforms {
                 request.ForceDownload = forceDownload

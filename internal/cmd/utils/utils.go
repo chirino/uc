@@ -47,8 +47,8 @@ func GetCobraCommand(o *cmd.Options, command string, getClientVersion func() (ve
 	}
 }
 
-func GetExecutable(options *cmd.Options, command string, version string) (string, error) {
-	index, err := catalog.LoadCatalogIndex(options)
+func GetExecutable(o *cmd.Options, command string, version string) (string, error) {
+	index, err := catalog.LoadCatalogIndex(o)
 	if err != nil {
 		return "", err
 	}
@@ -56,10 +56,6 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 	commandCatalog := index.Commands[command]
 	if commandCatalog == nil {
 		return "", fmt.Errorf("command not found in catalog: %s", command)
-	}
-
-	if version == "latest" {
-		version = commandCatalog.LatestVersion
 	}
 
 	keyring := signature.DefaultPublicKeyring
@@ -76,7 +72,15 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 		baseurl = commandCatalog.CatalogBaseURL
 	}
 
-	platforms, err := catalog.LoadCommandPlatforms(options, keyring, baseurl, command, version)
+	if version == "latest" {
+		commandIndex, err := catalog.LoadCommandIndex(o, keyring, baseurl, command)
+		if err != nil {
+			return "", err
+		}
+		version = commandIndex.Latest
+	}
+
+	platforms, err := catalog.LoadCommandPlatforms(o, keyring, baseurl, command, version)
 	if err != nil {
 		return "", err
 	}
@@ -98,7 +102,7 @@ func GetExecutable(options *cmd.Options, command string, version string) (string
 	request.CommandName = command
 	request.Platform = platform
 	request.Version = version
-	request.InfoLog = options.InfoLog
-	request.DebugLog = options.DebugLog
+	request.InfoLog = o.InfoLog
+	request.DebugLog = o.DebugLog
 	return cache.Get(request)
 }

@@ -13,7 +13,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
+	"strings"
 )
 
 type Request struct {
@@ -38,7 +38,7 @@ func Get(r *Request) (string, error) {
 		return "", err
 	}
 
-	targetExe := filepath.Join(commandsDir, r.CommandName, r.Version, r.Platform, ExeSuffix(r.CommandName))
+	targetExe := filepath.Join(commandsDir, r.CommandName, r.Version, r.Platform, ExeSuffix(r.Platform, r.CommandName))
 
 	if !r.ForceDownload {
 		exists, err := Exists(targetExe)
@@ -199,9 +199,9 @@ func CacheCommandPath() (string, error) {
 	return filepath.Join(home, ".uc", "cache", "commands"), nil
 }
 
-func ExeSuffix(s string) string {
-	if runtime.GOOS == "windows" {
-		return s + ".exe"
+func ExeSuffix(platform string, name string) string {
+	if strings.HasPrefix(platform, "windows-") {
+		return name + ".exe"
 	}
-	return s
+	return name
 }
