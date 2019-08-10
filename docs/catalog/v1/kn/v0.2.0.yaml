@@ -1,0 +1,12 @@
+darwin-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7iQgAKCRCf8lmA9bp+T1RpAKC171Nkxn4MUU/h1GWc1DJfFq2KQwCbBT0SIbNUQJVmw35QlW3LvrcZHxo=
+  size: 37057304
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/knative/client/releases/download/v0.2.0/kn-darwin-amd64
+linux-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7iTAAKCRCf8lmA9bp+TzDIAKDQr0FlXhC838b0h+RA3VeUxNVOvQCePryaOtX2qGLfHQysyrknRzLSJlU=
+  size: 37302948
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/knative/client/releases/download/v0.2.0/kn-linux-amd64
+windows-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7iVgAKCRCf8lmA9bp+TwO8AKC7FfY0NepDba9i0RR0MzN7imHpUACgsf76gBZuuGBWfgE36gx1kuJh2KU=
+  size: 37102080
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/knative/client/releases/download/v0.2.0/kn-windows-amd64.exe

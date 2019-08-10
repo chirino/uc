@@ -1,0 +1,20 @@
+darwin-amd64:
+  extract-tgz: ./oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU6XuwAKCRCf8lmA9bp+TwSlAJ0QovNVPGT8fQgTqLKFHoLV58N6GACfQQDbi9RKAi2j0klGVY43AZUlWmY=
+  size: 39380624
+  url: https://github.com/openshift/origin/releases/download/v1.0.6/openshift-origin-v1.0.6-2695cdc-darwin-amd64.tar.gz
+linux-386:
+  extract-tgz: ./oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU6X9QAKCRCf8lmA9bp+T5ZoAJ0VH0wIWsFBkf0/rTrlxn64pxcmBgCdEbZOa/LQG3DpqMVbWHTXtucqPco=
+  size: 32904576
+  url: https://github.com/openshift/origin/releases/download/v1.0.6/openshift-origin-v1.0.6-36-g0d87e4e-0d87e4e-linux-386.tar.gz
+linux-amd64:
+  extract-tgz: ./oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU6X1QAKCRCf8lmA9bp+T/yEAJ9n0UIJWou9E9g24jaFz+49RcoEswCaAqDr+1Zon0yYL6z1aIG0TVCwR5I=
+  size: 39931294
+  url: https://github.com/openshift/origin/releases/download/v1.0.6/openshift-origin-v1.0.6-2695cdc-linux-amd64.tar.gz
+windows-amd64:
+  extract-zip: oc.exe
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU6X3QAKCRCf8lmA9bp+Tx5mAJ9aPmmtYRTbjTIkFwYgV8lJje6q6QCeORJwWqDnb5Zlcs8TE8E0xgaKPSg=
+  size: 39881728
+  url: https://github.com/openshift/origin/releases/download/v1.0.6/openshift-origin-v1.0.6-2695cdc-windows-amd64.zip

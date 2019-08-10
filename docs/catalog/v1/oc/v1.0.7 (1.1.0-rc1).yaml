@@ -1,0 +1,17 @@
+darwin-amd64:
+  extract-tgz: ./oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7D6wAKCRCf8lmA9bp+TyLaAKCy9f/+Yhwy+ntU6CTba5veIZgHygCfbf2IXTdjuLmcwjIxkGwtYSXGNqo=
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/openshift/origin/releases/download/v1.0.7/openshift-origin-v1.0.7-67bb208-darwin-amd64.tar.gz
+linux-386:
+  extract-tgz: ./oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7D9AAKCRCf8lmA9bp+T8hBAKC4TbJX2Jm6cTGrAILsmRpEDXXBSgCfdCU2lEG9SeH6V4wboK5oJDEp51o=
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/openshift/origin/releases/download/v1.0.7/openshift-origin-v1.0.7-67bb208-linux-386.tar.gz
+linux-amd64:
+  extract-tgz: ./oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7D9AAKCRCf8lmA9bp+T8hBAKC4TbJX2Jm6cTGrAILsmRpEDXXBSgCfdCU2lEG9SeH6V4wboK5oJDEp51o=
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/openshift/origin/releases/download/v1.0.7/openshift-origin-v1.0.7-67bb208-linux-amd64.tar.gz
+windows-amd64:
+  extract-zip: oc.exe
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU6XogAKCRCf8lmA9bp+T13HAKDHr0+lqOoayW7xZTRYBt7QF7XGegCfevA/FRmwKxw2CWtS4AVJCPjAgJs=
+  size: 44863488
+  url: https://github.com/openshift/origin/releases/download/v1.0.7/openshift-origin-v1.0.7-67bb208-windows-amd64.zip

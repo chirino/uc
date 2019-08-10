@@ -1,0 +1,20 @@
+darwin-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7Y8AAKCRCf8lmA9bp+TyAjAJ9Ms0pYTuS/YGgtgNKzMmq1TwAl4gCgjN4cVjI16vXGSL/gy27rcUdNvUA=
+  size: 47329944
+  uncompress: gz
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/openshift/odo/releases/download/v0.0.17/odo-darwin-amd64.gz
+linux-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7Y8wAKCRCf8lmA9bp+T44fAJ43blO4u/+DQ4Wazu6MKLm4boq0pwCeL4i/kp+v4QxxuasQJc+kKL5/zcY=
+  size: 47874726
+  uncompress: gz
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/openshift/odo/releases/download/v0.0.17/odo-linux-amd64.gz
+linux-arm:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7Y9gAKCRCf8lmA9bp+TwcEAKCgluAerfRx3yiPzsCOj+CI5S82DQCffGSuANWVwnqU6aXWVkDNNDVGgRo=
+  size: 41621018
+  uncompress: gz
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/openshift/odo/releases/download/v0.0.17/odo-linux-arm.gz
+windows-amd64:
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7Y+QAKCRCf8lmA9bp+T+H6AJ9YjWMKEyt6lt1hco7at4pLttG+rgCglXORZuaZIMvoarqKzuck7gAFUxY=
+  size: 47816192
+  uncompress: gz
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/openshift/odo/releases/download/v0.0.17/odo-windows-amd64.exe.gz

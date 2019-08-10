@@ -1,0 +1,15 @@
+darwin-amd64:
+  extract-zip: oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU4U+QAKCRCf8lmA9bp+TyWiAJ9J/JihdY1O0Odi8mne/lMdQg3rvgCgnc83osV5FfwGlkmOV6JZPNTzb5M=
+  size: 197301984
+  url: https://github.com/openshift/origin/releases/download/v3.7.0-rc.0/openshift-origin-client-tools-v3.7.0-rc.0-e92d5c5-mac.zip
+linux-amd64:
+  extract-tgz: openshift-origin-client-tools-v3.7.0-rc.0-e92d5c5-linux-64bit/oc
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU4UtwAKCRCf8lmA9bp+T5TPAJ9kZPnfIgtHrjJiSaRiNhXVBZN7mACfZAmEd0Lh6uUaw86PnX9Ab5xVzLc=
+  size: 199502144
+  url: https://github.com/openshift/origin/releases/download/v3.7.0-rc.0/openshift-origin-client-tools-v3.7.0-rc.0-e92d5c5-linux-64bit.tar.gz
+windows-amd64:
+  extract-zip: oc.exe
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU4VOgAKCRCf8lmA9bp+T9DaAKCNR2TZIwSMNuTZP55tMa1gq9ddSQCdFlFxWqi8AXv5VBjJ5PYZ34GkCz0=
+  size: 199108608
+  url: https://github.com/openshift/origin/releases/download/v3.7.0-rc.0/openshift-origin-client-tools-v3.7.0-rc.0-e92d5c5-windows.zip

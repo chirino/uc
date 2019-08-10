@@ -7,17 +7,23 @@ import (
 	"github.com/chirino/uc/internal/pkg/files"
 	"io"
 	"os"
+	"strings"
 )
 
 func GzipReaderMiddleware(r io.Reader) (closer io.Reader, e error) {
 	return gzip.NewReader(r)
 }
 
-func TarReaderMiddleware(name string) func(r io.Reader) (closer io.Reader, e error) {
+func TarReaderMiddleware(name *string) func(r io.Reader) (closer io.Reader, e error) {
 	return func(r io.Reader) (closer io.Reader, e error) {
-		tarReader := tar.NewReader(r)
+		names := map[string]bool{}
+		for _, value := range strings.Split(*name, "|") {
+			names[value] = true
+		}
+
+		archive := tar.NewReader(r)
 		for {
-			tgzEntry, err := tarReader.Next()
+			entry, err := archive.Next()
 
 			// if no more files are found return
 			if err == io.EOF {
@@ -27,11 +33,12 @@ func TarReaderMiddleware(name string) func(r io.Reader) (closer io.Reader, e err
 				return nil, err
 			}
 
-			if tgzEntry.Name == name {
-				return tarReader, nil
+			if names[entry.Name] {
+				*name = entry.Name
+				return archive, nil
 			}
 		}
-		return nil, fmt.Errorf("File not found in tgz: " + name)
+		return nil, fmt.Errorf("File not found in tgz: " + *name)
 	}
 }
 

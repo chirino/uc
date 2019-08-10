@@ -62,7 +62,7 @@ func Sign(file string) error {
     if err != nil {
         return err
     }
-    err = ioutil.WriteFile(file+".sig", []byte(sigEncoded), 0755)
+    err = ioutil.WriteFile(file+".sig", []byte(sigEncoded), 0644)
     if err != nil {
         return err
     }
@@ -116,8 +116,8 @@ func StoreYaml(cat string, config interface{}) error {
     if err != nil {
         return err
     }
-    fmt.Println("storing catalog")
-    ioutil.WriteFile(cat, bytes, 0755)
+    fmt.Println("storing catalog:", cat)
+    ioutil.WriteFile(cat, bytes, 0644)
     if err != nil {
         return err
     }

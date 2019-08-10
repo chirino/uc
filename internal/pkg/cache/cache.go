@@ -62,7 +62,7 @@ func Get(r *Request) (string, error) {
 				_, err := io.Copy(dst, src)
 				return err
 			})
-		}, archive.ZipReaderMiddleware(r.ExtractZip))
+		}, archive.ZipReaderMiddleware(&r.ExtractZip))
 		if err != nil {
 			return "", err
 		}
@@ -73,7 +73,7 @@ func Get(r *Request) (string, error) {
 				_, err := io.Copy(dst, src)
 				return err
 			})
-		}, archive.GzipReaderMiddleware, archive.TarReaderMiddleware(r.ExtractTgz))
+		}, archive.GzipReaderMiddleware, archive.TarReaderMiddleware(&r.ExtractTgz))
 		if err != nil {
 			return "", err
 		}

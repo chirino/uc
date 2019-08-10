@@ -3,13 +3,14 @@
 package sign
 
 import (
+    "github.com/chirino/uc/internal/cmd"
     "github.com/chirino/uc/internal/cmd/catalog/pkg"
     "github.com/chirino/uc/internal/pkg/cache"
     "github.com/chirino/uc/internal/pkg/utils"
     "github.com/spf13/cobra"
 )
 
-func New() *cobra.Command {
+func New(*cmd.Options) *cobra.Command {
     var forceDownload = false
     command := &cobra.Command{
         Use:   "sign [command(s)]",

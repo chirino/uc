@@ -18,7 +18,7 @@ func New(options *cmd.Options) *cobra.Command {
 		Use:   "catalog",
 		Short: "Tools to manage the uc catalog",
 	}
-	command.AddCommand(sign.New())
-	command.AddCommand(find.New())
+	command.AddCommand(sign.New(options))
+	command.AddCommand(find.New(options))
 	return command
 }

@@ -11,7 +11,7 @@ func init() {
 	cmd.SubCommandFactories = append(cmd.SubCommandFactories, New)
 }
 
-var Version = "unknown"
+var Version = "latest"
 
 func New(options *cmd.Options) *cobra.Command {
 	return &cobra.Command{

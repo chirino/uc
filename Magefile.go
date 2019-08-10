@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"github.com/chirino/hawtgo/sh"
 	"github.com/chirino/uc/internal/pkg/dev"
+	"github.com/chirino/uc/internal/pkg/utils"
 	"github.com/magefile/mage/mg"
-
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 /////////////////////////////////////////////////////////////////////////
@@ -38,7 +41,36 @@ type Platform struct {
 	GOARCH string
 }
 
+type Generate mg.Namespace
+
+func (Generate) Platforms() {
+	output, _, err := cli.Line(`go tool dist list`).Output()
+
+	utils.ExitOnError(err)
+	platforms := strings.Split(strings.ReplaceAll(output, "/", "-"), "\n")
+
+	bytes, err := utils.ApplyTemplate(`
+//go:generate go run github.com/magefile/mage -d ../../.. generate:platforms
+package utils
+
+var Platforms = []string {
+{{range .}}    "{{.}}",
+{{end}} 
+}
+`, platforms)
+	utils.ExitOnError(err)
+
+	err = ioutil.WriteFile(filepath.Join(dev.GO_MOD_DIRECTORY, "internal", "pkg", "utils", "platforms.go"), bytes, 0644)
+	utils.ExitOnError(err)
+}
+
+func Format() {
+	d(Generate.Platforms)
+	cli.Line(`go fmt ./... `).MustZeroExit()
+}
+
 func Build() {
+	d(Format)
 	platforms := []Platform{
 		Platform{"linux", "amd64"},
 		Platform{"linux", "arm64"},
@@ -61,10 +93,6 @@ func Build() {
 
 func Test() {
 	cli.Line(`go test ./... `).MustZeroExit()
-}
-
-func Format() {
-	cli.Line(`go fmt ./... `).MustZeroExit()
 }
 
 func Changelog() {

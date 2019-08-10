@@ -1,0 +1,15 @@
+darwin-amd64:
+  extract-tgz: ./kamel
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7f+QAKCRCf8lmA9bp+T+AFAJ0ShDrT8qfpQ3VOYQ0QUd0y2webDQCfXfPMVZNBHCEXkB5K5VpKolGXMRE=
+  size: 41195040
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/apache/camel-k/releases/download/0.0.3/camel-k-client-0.0.3-mac-64bit.tar.gz
+linux-amd64:
+  extract-tgz: ./kamel
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7f9gAKCRCf8lmA9bp+T9EKAJsF74rCpSL6hYO4I0sYQfOHM+7oOwCfaTIMyqwTueKcruaJEcLf55OvlYk=
+  size: 41626012
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/apache/camel-k/releases/download/0.0.3/camel-k-client-0.0.3-linux-64bit.tar.gz
+windows-amd64:
+  extract-tgz: ./kamel
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU7f+wAKCRCf8lmA9bp+Tx9+AJ9F5fxye7ZgMFbKR4VySCyjv1SuMgCeKR5/3PC2f5WDxc6XGipK9R4gZS8=
+  size: 41473536
+  url: https://chirino:dc59f192e25e727cf59afe4b89504873e06f7d81@github.com/apache/camel-k/releases/download/0.0.3/camel-k-client-0.0.3-windows-64bit.tar.gz

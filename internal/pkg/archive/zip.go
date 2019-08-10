@@ -7,10 +7,16 @@ import (
 	"github.com/krolaw/zipstream"
 	"io"
 	"os"
+	"strings"
 )
 
-func ZipReaderMiddleware(name string) func(r io.Reader) (closer io.Reader, e error) {
+func ZipReaderMiddleware(name *string) func(r io.Reader) (closer io.Reader, e error) {
 	return func(r io.Reader) (closer io.Reader, e error) {
+		names := map[string]bool{}
+		for _, value := range strings.Split(*name, "|") {
+			names[value] = true
+		}
+
 		archive := zipstream.NewReader(r)
 		for {
 			entry, err := archive.Next()
@@ -23,11 +29,12 @@ func ZipReaderMiddleware(name string) func(r io.Reader) (closer io.Reader, e err
 				return nil, err
 			}
 
-			if entry.Name == name {
+			if names[entry.Name] {
+				*name = entry.Name
 				return archive, nil
 			}
 		}
-		return nil, fmt.Errorf("File not found in zip: " + name)
+		return nil, fmt.Errorf("File not found in zip: " + *name)
 	}
 }
 
