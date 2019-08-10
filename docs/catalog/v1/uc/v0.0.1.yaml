@@ -1,31 +1,31 @@
 darwin-386:
   extract-tgz: uc
-  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8T2wAKCRCf8lmA9bp+T79uAJ4068zDcLn+D5rV2PxqciwefToUOgCgnRVGHwqRqUAWjY1A4mHPD/DZWyI=
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8Z3AAKCRCf8lmA9bp+T4lFAJ4gkGjJBbEcWLPXqa+s6Tqo9zmgKACg1Btay/mo/H/uta3iyXN+tYv5X3g=
   size: 37041864
   url: https://github.com/chirino/uc/releases/download/v0.0.1/uc-v0.0.1-mac-32bit.tgz
 darwin-amd64:
   extract-tgz: uc
-  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8T3wAKCRCf8lmA9bp+T4dwAJ9NulNxNJwYPNnSCs42EBKCqysieQCdEtGq9coxQXozYKJ2mCq4rN2ifrs=
+  signature: iFwEABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8Z4AAKCRCf8lmA9bp+T078AJ91PzcO2dE7QdPKjNTMW3kacTtQmACYxk5mietQ65mbvGLuYzKO4prKIw==
   size: 39736496
   url: https://github.com/chirino/uc/releases/download/v0.0.1/uc-v0.0.1-mac-64bit.tgz
 linux-386:
   extract-tgz: uc
-  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8TyQAKCRCf8lmA9bp+T2smAJ45Mf6uyuhQJb4Dy7SDr0OIDRcrtgCgnHGXbO+jKwL94BxHv3xF1OUGDaY=
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8ZyQAKCRCf8lmA9bp+TyBMAJ46UMRAI61k6K/abKZwkyy3rB4j4gCfUzddukUehSXJ4P9gMzj2Axtm8W8=
   size: 37064101
   url: https://github.com/chirino/uc/releases/download/v0.0.1/uc-v0.0.1-linux-32bit.tgz
 linux-amd64:
   extract-tgz: uc
-  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8T0gAKCRCf8lmA9bp+T7R3AJ0Y/owK53yMu9H9TWdDQA4ZGEcnEQCeNFjq8D66+nvZXGRC7Ompv0XN/Oo=
-  size: 40067693
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8Z0QAKCRCf8lmA9bp+T5+YAJ9BDGdM+wXwCkYfX5ubF3GgvZsQJQCgq6ZManGWaJMvA9QBtk2tfEYTu9U=
+  size: 40063597
   url: https://github.com/chirino/uc/releases/download/v0.0.1/uc-v0.0.1-linux-64bit.tgz
 linux-arm:
   extract-tgz: uc
-  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8T1QAKCRCf8lmA9bp+T/npAJ42FZMQqZ/Ff5kncMNglszDfwjRtwCgtAhZhko/90V2c7zIeFzo+5F8AII=
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8Z1AAKCRCf8lmA9bp+T4pjAJ9Yb18AShBVvxrL7czZ5CWgakj/OACgzG1+tjIu3/vJI0/sgMeBf6rpZgM=
   size: 35031203
   url: https://github.com/chirino/uc/releases/download/v0.0.1/uc-v0.0.1-linux-arm32bit.tgz
 linux-arm64:
   extract-tgz: uc
-  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8T2AAKCRCf8lmA9bp+T6ckAKDQlTSH+RRT+gFlRyWOu0mXc4s7HgCfdAQacxDKebUnZoPqFgrAqYQ5too=
+  signature: iF0EABECAB0WIQTluCR6+KYZoo+Q/fyf8lmA9bp+TwUCXU8Z2AAKCRCf8lmA9bp+T8hfAJ4x5qXL2YgF8zEuxL6++uGXuVrR/ACgk+9mqF6Qr1YRJcWPjkGehVNf2Ls=
   size: 38377779
   url: https://github.com/chirino/uc/releases/download/v0.0.1/uc-v0.0.1-linux-arm64bit.tgz
 windows-amd64:
