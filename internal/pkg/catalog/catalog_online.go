@@ -66,7 +66,7 @@ func fetch(o *cmd.Options, keyring openpgp.EntityList, urlBase string, filePath 
 	if err != nil {
 		return err
 	}
-	url := path.Join(join(urlBase, filePath...)...)
+	url := urlBase + "/" + path.Join(filePath...)
 
 	err = downloadFileWithSig(o, url, p)
 	if err != nil {
