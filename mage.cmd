@@ -1,0 +1,1 @@
+@go run github.com/magefile/mage -d internal %*

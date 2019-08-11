@@ -55,7 +55,7 @@ Invoke `uc` with
 
 ## How it works
 
-The uc command uses an online catalog to discover all the supported sub commands.  It then uses
+The uc command uses [an online catalog](https://chirino.github.io/uc/) to discover all the supported sub commands.  It then uses
 information found in the catalog to download and verify the sub command executable has not been
 tampered with by checking it against a gpg signature.  Both the catalog and sub command executables
 are stored in `$HOME/.uc/cache` or `%USERPROFILE%\.uc\cache`.  This command does not delete data 
@@ -69,9 +69,22 @@ the version for `kubectl` selected will match match the Kubernetes server versio
 other sub commands which we do not have a good way of selecting the best version based on the cluster
 state, we will used the latest version released.
 
-## Building From Source
+## Installing From Source
 
 Requires [Go 1.12+](https://golang.org/dl/).  To fetch the latest sources and install into your system:
 
     go get -u github.com/chirino/uc
 
+## Buidling From Source
+
+Use git to clone this repo:
+
+    git clone https://github.com/chirino/uc
+    cd uc
+
+Then you can build it using mage:
+    
+| Platform      | Command to run |
+|---------------|----------------|
+| Windows       | `mage`         |    
+| Other         | `./mage`       |   

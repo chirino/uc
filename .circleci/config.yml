@@ -3,6 +3,8 @@ yaml-templates:
 
   branch_filters: &branch_filters
     filters:
+      branches:
+        ignore: /gh-pages/
       tags:
         only: /.*/ # needed by the publish-github-release job
 
