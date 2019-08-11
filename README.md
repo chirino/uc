@@ -1,7 +1,6 @@
 # The `UC` Catalog Site
 
-`https://chirino.github.io/uc/catalog/v1` is he primary catalog API URL used by the `uc`command.  This page is used to document it's API endpoints.  This site signs resouces with the GNU PGP key in listing #1:
-
+`https://chirino.github.io/uc/catalog/v1` is the primary catalog API URL used by the `uc`command.  This page is used to document it's API resources.  You can verify the sign digital signatures for resources signed by the API with the public key in listing #1:
 
 
 **Listing #1: The UC GNU PGP Key**
@@ -38,21 +37,19 @@ tUl2fIH1uA==
 
 ## GET `/index.yaml`
 
-This is the catalog index file used discover all the sub commands `uc` can support.  
+This is the catalog index resource used discover all the sub commands `uc` can support.  
+
+Each command int the yaml resource can define the following fields:
+
+| Field                | Description                                           |
+| -------------------- | ------------------------------------------------------|
+| `short-description`  | A short description of the command.
+| `long-description`   | A long description of the command.                    |
+| `catalog-base-url`   | The URL base to use to load catalog data for this command. If not set, the primary catalog base URL will be used. |
+| `catalog-public-key` | An armored GNU PGP public key that shold be used to validate digital signatures for the catalog and executable files assocaited with the command. If not set the default public key will be used. |
 
 
 **Example [`/index.yaml`](https://chirino.github.io/uc/catalog/v1/index.yaml):**
-
-Each command int the yaml file can define the following fields:
-
-<table>
-<tr><th>Field</th><th>Description</th></tr>
-<tr><td>`short-description`</td><td>A short description of the command</td></tr>
-<tr><td>`long-description`</td><td>A long description of the command.</td></tr>
-<tr><td>`catalog-base-url`</td><td>The URL base to use to load catalog data for this command. If not set, the primary catalog base URL will be used.</td></tr>
-<tr><td>`catalog-public-key`</td><td>An armored GNU PGP public key that shold be used to validate digital signatures for the catalog and executable files assocaited with the command. If not set the default public key will be used.</td></tr>
-</table>
-
 ```yaml
 commands:
   kubectl:
@@ -62,12 +59,15 @@ commands:
 .....
 ```
 
+### GET `/index.yaml.sig`
+
+The digital signature for the `/index.yaml` resource.
+
 ## GET `/{:sub-command}.yaml`
 
 When a `uc`sub command is executed, it will load sub command index resource to find the versions available for the subcommand.
 
 **Example [`/kubectl.yaml`](https://chirino.github.io/uc/catalog/v1/kubectl.yaml):**
-
 ```yaml
 latest: v1.15.1
 versions:
@@ -76,25 +76,25 @@ versions:
   - "v1.13.0"
 ....  
 ```
+
+### GET `/{:sub-command}.yaml.sig`
+
+The digital signature for the `/{:sub-command}.yaml` resource.
+
 ## GET `/{:sub-command}/{:verison}.yaml`
 
-This endpoint yaml resource contains the sub command release information. Once `uc` selects a version of sub command to to use, it gets this resource find find out where to download, what to extract form the download and the digitial signature of the sub command. 
+This resource yaml resource contains the sub command release information. Once `uc` selects a version of sub command to to use, it gets this resource find find out where to download, what to extract form the download and the digitial signature of the sub command. 
 
 It should contain more or more `$GOOS-$GOARCH` platforms entries for each platform that the sub command was built against.  See the [go enviornment docs](https://golang.org/doc/install/source#environment) for a valid list of values for `$GOOS` and `$GOARCH`.  Eeach platform can define the following fields:
 
-| Field | Description |
-| ------------- | ------------- |
-| `url`  | The URL from which to download the sub command  |
-
-<table>
-<tr><th></th><th></th></tr>
-<tr><th><code class="highlighter-rouge">url</code></th><th>The URL from which to download the sub command</th></tr>
-<tr><td><code class="highlighter-rouge">size</code></td><td>The expected size of the sub command exectuable once downloaded and extracted.</td></tr>
-<tr><td><code class="highlighter-rouge">signature</code></td><td>The digital signature of the  sub command exectuable once downloaded and extracted.</td></tr>
-<tr><td><code class="highlighter-rouge">extract-tgz</code></td><td>If the URL is a tar gz file, set this field to the path in the archive of the executable.</td></tr>
-<tr><td><code class="highlighter-rouge">extract-zip</code></td><td>If the URL is a zip file, set this field to the path in the archive of the executable.</td></tr>
-<tr><td><code class="highlighter-rouge">uncompress</code></td><td>If the URL is a gz compressed file, set this field to 'gz'</td></tr>
-</table>
+| Field         | Description                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------|
+| `url`         | The URL from which to download the sub command                                                  |
+| `size`        | The expected size of the sub command exectuable once downloaded and extracted.                  |
+| `signature`   | The digital signature of the  sub command exectuable once downloaded and extracted.             |
+| `extract-tgz` | If the URL is a tar gz file, set this field to the path in the archive of the executable.       |
+| `extract-zip` | If the URL is a zip file, set this field to the path in the archive of the executable.          |
+| `uncompress`  | If the URL is a gz compressed file, set this field to 'gz'                                      |
 
 **Example [`/kubectl/v1.15.1.yaml`](https://chirino.github.io/uc/catalog/v1/kubectl/v1.15.1.yaml):**
 ```yaml
@@ -116,6 +116,14 @@ windows-amd64:
 ....  
 ```
 
+### GET `/{:sub-command}/{:verison}.yaml.sig`
+
+The digital signature for the `/{:sub-command}/{:verison}.yaml` resource.
+
+
 <style>
 h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-size: inherit; }
+table { width: 100%; }
 </style>
+
+
