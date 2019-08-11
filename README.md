@@ -1,6 +1,6 @@
 # The `UC` Catalog Site
 
-[https://chirino.github.io/uc/catalog/v1](https://chirino.github.io/uc/catalog/v1) is he primary catalog API URL used by the `uc`command.  This page is used to document it's API endpoints.  This site signs resouces with the GNU PGP key in listing #1:
+`https://chirino.github.io/uc/catalog/v1` is he primary catalog API URL used by the `uc`command.  This page is used to document it's API endpoints.  This site signs resouces with the GNU PGP key in listing #1:
 
 
 
@@ -80,16 +80,20 @@ versions:
 
 This endpoint yaml resource contains the sub command release information. Once `uc` selects a version of sub command to to use, it gets this resource find find out where to download, what to extract form the download and the digitial signature of the sub command. 
 
-It should contain more or more `{:GOOS}-{:GOARCH}` platforms entries for each platform that the sub command was built against.  Eeach platform can define the following fields:
+It should contain more or more `$GOOS-$GOARCH` platforms entries for each platform that the sub command was built against.  See the [go enviornment docs](https://golang.org/doc/install/source#environment) for a valid list of values for `$GOOS` and `$GOARCH`.  Eeach platform can define the following fields:
+
+| Field | Description |
+| ------------- | ------------- |
+| `url`  | The URL from which to download the sub command  |
 
 <table>
-<tr><th>Field</th><th>Description</th></tr>
-<tr><th>`url`</th><th>The URL from which to download the sub command</th></tr>
-<tr><td>`size`</td><td>The expected size of the sub command exectuable once downloaded and extracted.</td></tr>
-<tr><td>`signature`</td><td>The digital signature of the  sub command exectuable once downloaded and extracted.</td></tr>
-<tr><td>`extract-tgz`</td><td>If the URL is a tar gz file, set this field to the path in the archive of the executable.</td></tr>
-<tr><td>`extract-zip`</td><td>If the URL is a zip file, set this field to the path in the archive of the executable.</td></tr>
-<tr><td>`uncompress`</td><td>If the URL is a gz compressed file, set this field to 'gz'</td></tr>
+<tr><th></th><th></th></tr>
+<tr><th><code class="highlighter-rouge">url</code></th><th>The URL from which to download the sub command</th></tr>
+<tr><td><code class="highlighter-rouge">size</code></td><td>The expected size of the sub command exectuable once downloaded and extracted.</td></tr>
+<tr><td><code class="highlighter-rouge">signature</code></td><td>The digital signature of the  sub command exectuable once downloaded and extracted.</td></tr>
+<tr><td><code class="highlighter-rouge">extract-tgz</code></td><td>If the URL is a tar gz file, set this field to the path in the archive of the executable.</td></tr>
+<tr><td><code class="highlighter-rouge">extract-zip</code></td><td>If the URL is a zip file, set this field to the path in the archive of the executable.</td></tr>
+<tr><td><code class="highlighter-rouge">uncompress</code></td><td>If the URL is a gz compressed file, set this field to 'gz'</td></tr>
 </table>
 
 **Example [`/kubectl/v1.15.1.yaml`](https://chirino.github.io/uc/catalog/v1/kubectl/v1.15.1.yaml):**
@@ -112,4 +116,6 @@ windows-amd64:
 ....  
 ```
 
-
+<style>
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-size: inherit; }
+</style>
