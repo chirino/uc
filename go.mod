@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.43.0 // indirect
 	github.com/chirino/hawtgo v0.0.0-20190807190259-475db1a4c1c2
 	github.com/google/go-cmp v0.3.1 // indirect
-	github.com/google/go-github/v27 v27.0.4
+	github.com/google/go-github/v27 v27.0.5
 	github.com/googleapis/gnostic v0.3.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
