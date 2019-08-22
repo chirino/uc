@@ -163,7 +163,6 @@ jobs:
       - run:
           name: "Create a Draft Release on GitHub"
           command: |
-            set -x
             VERSION="$CIRCLE_TAG"
             BASEDIR=`pwd`
             mkdir "${BASEDIR}/archives"
