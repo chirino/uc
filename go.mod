@@ -10,7 +10,7 @@ require (
 	github.com/googleapis/gnostic v0.3.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
-	github.com/magefile/mage v1.8.0
+	github.com/magefile/mage v1.9.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
 	github.com/stretchr/testify v1.4.0
